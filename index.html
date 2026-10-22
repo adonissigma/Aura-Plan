@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraPlan - Pure Performance</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007AFF%22/><text x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22white%22>∞</text></svg>">
+    <title>AuraPlan - Ultimate Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%236366f1%22/><text x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22white%22>∞</text></svg>">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
@@ -17,54 +21,61 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { appleGray: '#F5F5F7', appleDark: '#121212', primary: '#007AFF' }
+                    colors: { appleGray: '#F5F5F7', appleDark: '#121212' }
                 }
             }
         }
     </script>
 
     <style>
-        /* TỐI ƯU HIỆU NĂNG TUYỆT ĐỐI */
+        /* Tối ưu hiệu năng */
         html, body { height: 100vh; overflow: hidden; }
         body { display: flex; flex-direction: column; }
         header { flex-shrink: 0; }
-        main { flex: 1; overflow-y: auto; min-height: 0; position: relative; }
+        main { flex: 1; overflow-y: auto; min-height: 0; position: relative; will-change: scroll-position; }
+        
+        :root {
+            --accent: #007AFF;
+            --accent-light: rgba(0, 122, 255, 0.1);
+        }
 
-        /* Cuộn mượt */
+        /* Custom Scrollbar (mỏng, nhẹ) */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
 
-        /* Bỏ Blur (Gây lag), dùng màu đặc */
+        /* Glassmorphism (Giảm độ mờ để bớt lag) */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: background-color 0.2s, border-color 0.2s;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 20px 0 rgba(31, 38, 135, 0.05);
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
         .dark .glass-panel {
-            background: rgba(28, 28, 30, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            background: rgba(30, 30, 35, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.4);
         }
         
-        /* Hiệu ứng hover nhẹ, không gây lag */
-        .hover-lift { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .hover-item { transition: background-color 0.15s ease; }
-        .hover-item:hover { background-color: rgba(0, 0, 0, 0.04); }
+        /* Hiệu ứng mượt mà */
+        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; will-change: transform; }
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.1); }
+        .hover-item { transition: background-color 0.15s ease, transform 0.15s ease; }
+        .hover-item:hover { background-color: rgba(0, 0, 0, 0.04); transform: translateX(3px); }
         .dark .hover-item:hover { background-color: rgba(255, 255, 255, 0.06); }
 
         /* Modals */
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); 
-            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); /* Blur chỉ dùng ở đây */
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
             z-index: 100; display: flex; align-items: center; justify-content: center; 
             opacity: 0; pointer-events: none; transition: opacity 0.2s ease; 
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { transform: scale(0.95); transition: transform 0.2s ease; }
+        .modal-content { transform: scale(0.95); transition: transform 0.2s ease; will-change: transform; }
         .modal-overlay.active .modal-content { transform: scale(1); }
 
         .progress-ring__circle { transition: stroke-dashoffset 0.5s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
@@ -72,13 +83,13 @@
         .dark .habit-box { border-color: #374151; }
         .habit-box.done { border: none; }
         
-        .today-col { border: 2px solid #007AFF !important; box-shadow: 0 4px 15px -3px rgba(0, 122, 255, 0.2) !important; z-index: 10; }
+        .today-col { border: 2px solid var(--accent) !important; box-shadow: 0 4px 15px -3px var(--accent-light) !important; z-index: 10; }
         .fixed-task { background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-left: 3px solid #6366f1; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; }
         .dark .fixed-task { background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3); }
         
-        /* Kéo thả mượt mà, không dùng scroll-snap gây sượng */
-        .drag-scroll { cursor: grab; user-select: none; }
-        .drag-scroll.active { cursor: grabbing; }
+        /* Drag Scroll */
+        .drag-scroll { cursor: grab; user-select: none; -webkit-overflow-scrolling: touch; }
+        .drag-scroll.active { cursor: grabbing; scroll-behavior: auto; }
 
         /* App Grid */
         .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 1.5rem; }
@@ -92,13 +103,13 @@
 </head>
 <body class="bg-appleGray text-gray-800 dark:bg-appleDark dark:text-gray-100 font-sans antialiased transition-colors duration-300">
 
-    <div class="fixed inset-0 -z-10 bg-[#F5F5F7] dark:bg-[#121212] transition-colors duration-300"></div>
+    <div class="fixed inset-0 -z-10 bg-gradient-to-br from-indigo-50/50 to-pink-50/50 dark:from-[#1a1a1a] dark:to-[#121212] transition-colors duration-300"></div>
 
     <!-- Header -->
-    <header class="glass-panel h-16 flex items-center justify-between px-4 md:px-6 z-40 border-b border-gray-200 dark:border-gray-800">
+    <header class="glass-panel h-16 flex items-center justify-between px-4 md:px-6 z-40 border-b border-white/20 dark:border-gray-800">
         <div class="flex items-center gap-4 cursor-pointer" onclick="switchView('dashboard')">
             <button onclick="event.stopPropagation(); toggleSidebar()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"><i class="fa-solid fa-bars text-gray-600 dark:text-gray-300"></i></button>
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-lg" style="background: linear-gradient(to top right, var(--accent), #8b5cf6)">
                 <i class="fa-solid fa-infinity text-lg"></i>
             </div>
             <h1 class="text-xl font-bold tracking-tight hidden sm:block">AuraPlan</h1>
@@ -137,10 +148,10 @@
     </header>
 
     <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 z-40 opacity-0 pointer-events-none transition-opacity"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity"></div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 glass-panel z-50 flex flex-col p-4 overflow-y-auto transform -translate-x-full transition-transform duration-200 shadow-2xl">
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 glass-panel z-50 flex flex-col p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300">
         <div class="flex justify-between items-center mb-6 px-2">
             <h2 class="text-lg font-bold">Menu</h2>
             <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"><i class="fa-solid fa-xmark"></i></button>
@@ -151,6 +162,7 @@
             <button onclick="openFeature('streak')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-fire w-6 text-orange-500"></i> My Streak</button>
             <button onclick="openFeature('reading')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-book w-6 text-blue-500"></i> Reading Library</button>
             <button onclick="openFeature('health')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-heart-pulse w-6 text-red-500"></i> Health Tracker</button>
+            <button onclick="openFeature('finance')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-wallet w-6 text-yellow-500"></i> Finance Tracker</button>
             <button onclick="openFeature('focus')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-stopwatch w-6 text-purple-500"></i> Focus Space</button>
             <button onclick="openFeature('settings')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-gear w-6 text-gray-500"></i> Settings</button>
         </nav>
@@ -182,8 +194,9 @@
                 <!-- Weekly Schedule -->
                 <div class="glass-panel rounded-3xl p-5">
                     <div class="flex justify-between items-center mb-4 px-2">
-                        <h3 class="font-bold text-lg"><i class="fa-regular fa-calendar-days text-primary mr-2"></i> Lịch Trình Tuần</h3>
+                        <h3 class="font-bold text-lg"><i class="fa-regular fa-calendar-days mr-2" style="color: var(--accent)"></i> Lịch Trình Tuần</h3>
                         <div class="flex gap-2 items-center">
+                            <button onclick="exportICS('week')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-green-100 hover:text-green-600 transition" title="Xuất lịch tuần"><i class="fa-solid fa-download text-xs"></i></button>
                             <button onclick="changeWeek(-1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
                             <span id="week-label" class="text-sm font-medium px-2 py-1.5">Tuần này</span>
                             <button onclick="changeWeek(1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
@@ -237,13 +250,13 @@
 
             <!-- Right Column (Pomodoro Summary) -->
             <div class="xl:col-span-3 flex flex-col gap-5">
-                <div class="glass-panel rounded-3xl p-6 flex flex-col items-center relative overflow-hidden bg-indigo-50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-900/30">
+                <div class="glass-panel rounded-3xl p-6 flex flex-col items-center relative overflow-hidden bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-200/50 dark:border-indigo-500/30">
                     <h3 class="font-bold text-lg mb-1 absolute top-6 left-6"><i class="fa-solid fa-stopwatch text-indigo-500 mr-2"></i> Focus</h3>
-                    <button onclick="openFeature('focus')" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-expand text-indigo-500 text-xs"></i></button>
+                    <button onclick="openFeature('focus')" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/50 dark:bg-gray-800/50 flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition"><i class="fa-solid fa-expand text-indigo-500 text-xs"></i></button>
                     
                     <div class="relative w-40 h-40 mt-8 flex items-center justify-center cursor-pointer" onclick="openFeature('focus')">
                         <svg class="w-full h-full transform -rotate-90">
-                            <circle cx="80" cy="80" r="72" stroke="currentColor" stroke-width="8" fill="transparent" class="text-indigo-200 dark:text-indigo-900/50"></circle>
+                            <circle cx="80" cy="80" r="72" stroke="currentColor" stroke-width="8" fill="transparent" class="text-indigo-200/50 dark:text-indigo-900/50"></circle>
                             <circle id="mini-pomo-ring" cx="80" cy="80" r="72" stroke="currentColor" stroke-width="8" fill="transparent" stroke-dasharray="452" stroke-dashoffset="0" class="progress-ring__circle text-indigo-500"></circle>
                         </svg>
                         <div class="absolute flex flex-col items-center">
@@ -257,7 +270,7 @@
                     
                     <div class="flex gap-3 z-10">
                         <button onclick="togglePomo()" id="mini-pomo-btn" class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:scale-105 transition"><i class="fa-solid fa-play text-sm ml-1"></i></button>
-                        <button onclick="resetPomo()" class="w-10 h-10 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-rotate-right"></i></button>
+                        <button onclick="resetPomo()" class="w-10 h-10 rounded-full bg-white/50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition hover:scale-105"><i class="fa-solid fa-rotate-right"></i></button>
                     </div>
                 </div>
 
@@ -276,15 +289,15 @@
         <div class="modal-content glass-panel w-full max-w-5xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('daily-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             <div class="flex items-center gap-4 mb-6 shrink-0">
-                <input type="date" id="daily-date-picker" onchange="renderDailyView(this.value)" class="p-2 text-xl font-bold bg-transparent border-b-2 border-primary outline-none dark:text-white">
+                <input type="date" id="daily-date-picker" onchange="renderDailyView(this.value)" class="p-2 text-xl font-bold bg-transparent border-b-2 outline-none dark:text-white" style="border-color: var(--accent)">
                 <h2 class="text-2xl font-bold hidden sm:block">Daily Planner</h2>
             </div>
             
             <div class="flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
                 <div class="w-full md:w-1/2 flex flex-col overflow-hidden bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20 shadow-sm">
                     <div class="flex justify-between items-center mb-3 shrink-0">
-                        <h3 class="font-bold text-lg"><i class="fa-solid fa-list-check text-primary mr-2"></i> Nhiệm Vụ</h3>
-                        <button onclick="openTaskModal(document.getElementById('daily-date-picker').value)" class="text-sm bg-primary text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition">+ Task</button>
+                        <h3 class="font-bold text-lg"><i class="fa-solid fa-list-check mr-2" style="color: var(--accent)"></i> Nhiệm Vụ</h3>
+                        <button onclick="openTaskModal(document.getElementById('daily-date-picker').value)" class="text-sm text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition" style="background-color: var(--accent)">+ Task</button>
                     </div>
                     <div id="daily-task-list" class="space-y-2 overflow-y-auto custom-scrollbar pr-2 flex-1"></div>
                 </div>
@@ -309,11 +322,34 @@
                 <button onclick="openModal('habit-add-modal')" class="bg-purple-500 text-white px-4 py-2 rounded-xl text-sm shadow-lg hover:bg-purple-600 transition mr-10">+ Tạo Habit</button>
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 shrink-0">
+                <div class="md:col-span-2 bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
+                    <h4 class="text-sm font-bold text-gray-500 mb-2">Tiến Độ Tháng</h4>
+                    <div class="h-24 w-full"><canvas id="habitMonthlyChart"></canvas></div>
+                </div>
+                <div class="bg-purple-50/50 dark:bg-purple-900/10 rounded-2xl p-4 border border-purple-100 dark:border-purple-900/30 flex items-center justify-around">
+                    <div class="text-center">
+                        <div class="relative w-16 h-16">
+                            <svg class="w-full h-full transform -rotate-90"><circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" class="text-purple-200 dark:text-purple-900"></circle><circle id="habit-month-ring" cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" stroke-dasharray="176" stroke-dashoffset="176" class="progress-ring__circle text-purple-500"></circle></svg>
+                            <span id="habit-month-percent" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-purple-600">0%</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-1">Tháng</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="relative w-16 h-16">
+                            <svg class="w-full h-full transform -rotate-90"><circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" class="text-blue-200 dark:text-blue-900"></circle><circle id="habit-week-ring" cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" stroke-dasharray="176" stroke-dashoffset="176" class="progress-ring__circle text-blue-500"></circle></svg>
+                            <span id="habit-week-percent" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-blue-600">0%</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-1">Tuần</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex-1 overflow-x-auto custom-scrollbar bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
                 <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="border-b border-gray-200 dark:border-gray-700">
-                            <th class="p-2 min-w-[180px] text-sm text-gray-500 sticky left-0 bg-white dark:bg-[#1a1a1a] z-10">Thói quen</th>
+                            <th class="p-2 min-w-[150px] text-sm text-gray-500 sticky left-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur">Thói quen</th>
                             <script>for(let i=1; i<=31; i++) document.write(`<th class="w-6 p-1 text-center text-[10px] text-gray-400">${i}</th>`);</script>
                         </tr>
                     </thead>
@@ -352,7 +388,7 @@
             <button onclick="closeModal('reading-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             <div class="flex justify-between items-center mb-4 shrink-0 pr-10">
                 <h2 class="text-2xl font-bold"><i class="fa-solid fa-book-open text-emerald-500 mr-2"></i> Thư Viện Sách</h2>
-                <button onclick="openModal('add-book-modal')" class="text-sm bg-primary text-white px-3 py-1.5 rounded-lg transition shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Sách</button>
+                <button onclick="openModal('add-book-modal')" class="text-sm text-white px-3 py-1.5 rounded-lg transition shadow-sm" style="background-color: var(--accent)"><i class="fa-solid fa-plus mr-1"></i> Sách</button>
             </div>
             
             <div class="flex flex-col lg:flex-row gap-6 overflow-y-auto custom-scrollbar flex-1 pr-2">
@@ -384,7 +420,7 @@
                         <div class="bg-white/50 dark:bg-gray-800/50 rounded-3xl p-5 border border-white/20">
                             <div class="flex justify-between items-center mb-3">
                                 <h3 class="font-bold text-sm text-gray-500">Đã đọc xong</h3>
-                                <select id="reading-year-filter" onchange="renderReadingView()" class="text-xs font-bold text-primary bg-transparent outline-none cursor-pointer border border-gray-200 dark:border-gray-700 rounded p-1"></select>
+                                <select id="reading-year-filter" onchange="renderReadingView()" class="text-xs font-bold bg-transparent outline-none cursor-pointer border border-gray-200 dark:border-gray-700 rounded p-1" style="color: var(--accent)"></select>
                             </div>
                             <div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar" id="reading-list-finished"></div>
                         </div>
@@ -439,54 +475,9 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <input type="color" id="health-color" value="#ef4444" class="h-9 w-10 p-1 rounded-lg border border-gray-300 cursor-pointer">
-                            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg text-sm transition h-9 whitespace-nowrap hover:opacity-90">Thêm</button>
+                            <button type="submit" class="text-white px-4 py-2 rounded-lg text-sm transition h-9 whitespace-nowrap hover:opacity-90" style="background-color: var(--accent)">Thêm</button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Focus Modal (Pomodoro) -->
-    <div id="focus-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('focus-modal')">
-        <div class="modal-content glass-panel w-full max-w-4xl h-auto max-h-[90vh] rounded-3xl p-8 relative flex flex-col items-center justify-center overflow-y-auto">
-            <button onclick="closeModal('focus-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            
-            <h2 class="text-2xl font-bold mb-6 text-indigo-500"><i class="fa-solid fa-stopwatch mr-2"></i> Focus Space</h2>
-            
-            <div class="flex gap-2 mb-8">
-                <button onclick="setPomoPreset(25,5)" class="px-4 py-1.5 text-xs font-bold rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-indigo-500 hover:text-white transition">25/5</button>
-                <button onclick="setPomoPreset(50,10)" class="px-4 py-1.5 text-xs font-bold rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-indigo-500 hover:text-white transition">50/10</button>
-            </div>
-            
-            <div class="relative w-72 h-72 flex items-center justify-center mb-6">
-                <svg class="w-full h-full transform -rotate-90">
-                    <circle cx="144" cy="144" r="128" stroke="currentColor" stroke-width="12" fill="transparent" class="text-gray-200 dark:text-gray-700"></circle>
-                    <circle id="main-pomo-ring" cx="144" cy="144" r="128" stroke="currentColor" stroke-width="12" fill="transparent" stroke-dasharray="804" stroke-dashoffset="0" class="progress-ring__circle text-indigo-500"></circle>
-                </svg>
-                <div class="absolute flex flex-col items-center">
-                    <div id="pomo-attached-task" class="hidden absolute -top-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap shadow-sm border border-indigo-200 dark:border-indigo-700"></div>
-                    
-                    <span id="main-timer-display" class="text-6xl font-extrabold tracking-tight">25:00</span>
-                    <span id="pomo-state" class="text-sm text-gray-500 mt-2 uppercase tracking-widest font-semibold">Deep Work</span>
-                </div>
-            </div>
-
-            <div class="text-5xl mb-8" id="main-tree">🌱</div>
-
-            <div class="w-full max-w-sm mb-8 relative">
-                <label class="text-xs font-semibold text-gray-500 mb-1 block">Gắn với Task</label>
-                <select id="pomo-task-select" onchange="updateAttachedTaskDisplay()" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm border border-gray-200 dark:border-gray-700 outline-none shadow-sm cursor-pointer">
-                    <option value="">-- Không chọn --</option>
-                </select>
-            </div>
-
-            <div class="flex gap-6 items-center">
-                <button onclick="togglePomo()" id="main-pomo-btn" class="w-16 h-16 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:scale-105 transition"><i class="fa-solid fa-play text-2xl ml-1"></i></button>
-                <button onclick="resetPomo()" class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-gray-300 transition"><i class="fa-solid fa-rotate-right text-lg"></i></button>
-                
-                <div class="flex flex-col gap-1 border-l border-gray-300 dark:border-gray-600 pl-6">
-                    <button id="pomo-action-btn" onclick="handlePomoAction()" class="text-sm font-bold text-green-600 hover:underline">Mark as Done</button>
                 </div>
             </div>
         </div>
@@ -496,14 +487,14 @@
     <div id="profile-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('profile-modal')">
         <div class="modal-content glass-panel w-full max-w-3xl h-[85vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('profile-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            <h2 class="text-2xl font-bold mb-6 shrink-0"><i class="fa-solid fa-user-circle text-primary mr-2"></i> Không Gian Cá Nhân</h2>
+            <h2 class="text-2xl font-bold mb-6 shrink-0"><i class="fa-solid fa-user-circle mr-2" style="color: var(--accent)"></i> Không Gian Cá Nhân</h2>
             
             <div class="overflow-y-auto custom-scrollbar flex-1 pr-2">
                 <form onsubmit="saveProfile(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2 flex items-center gap-4 mb-2">
                         <div class="relative">
                             <img id="prof-avatar-img" src="https://i.pravatar.cc/150?img=47" class="w-20 h-20 rounded-full border-4 border-white dark:border-gray-600 shadow-lg object-cover">
-                            <label class="absolute bottom-0 right-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition shadow-md" title="Đổi ảnh">
+                            <label class="absolute bottom-0 right-0 w-6 h-6 bg-appleBlue text-white rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition shadow-md" title="Đổi ảnh">
                                 <i class="fa-solid fa-camera text-xs"></i>
                                 <input type="file" id="prof-avatar-input" accept="image/*" class="hidden" onchange="uploadAvatar(event)">
                             </label>
@@ -537,7 +528,7 @@
                     <div class="md:col-span-2">
                         <label class="text-xs font-bold text-gray-500">Mạng xã hội (Facebook, Insta, Github...)</label>
                         <div id="social-links-container" class="space-y-2 mb-2"></div>
-                        <button type="button" onclick="addSocialLink()" class="text-xs text-primary hover:underline">+ Thêm mạng xã hội</button>
+                        <button type="button" onclick="addSocialLink()" class="text-xs text-appleBlue hover:underline">+ Thêm mạng xã hội</button>
                     </div>
                     <div class="md:col-span-2">
                         <label class="text-xs font-bold text-gray-500">Tiểu sử / Giới thiệu</label>
@@ -545,33 +536,45 @@
                     </div>
                     
                     <div class="md:col-span-2 mt-4">
-                        <button type="submit" class="w-full bg-primary text-white py-2.5 rounded-xl font-bold transition hover:opacity-90">Lưu Thông Tin</button>
+                        <button type="submit" class="w-full text-white py-2.5 rounded-xl font-bold transition hover:opacity-90" style="background-color: var(--accent)">Lưu Thông Tin</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Settings Modal (Đã lược bớt) -->
+    <!-- Settings Modal -->
     <div id="settings-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('settings-modal')">
         <div class="modal-content glass-panel w-full max-w-4xl h-[80vh] rounded-3xl p-0 flex flex-col md:flex-row overflow-hidden relative">
             <button onclick="closeModal('settings-modal')" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             
             <div class="w-full md:w-56 bg-gray-50/80 dark:bg-gray-900/80 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col gap-2 overflow-x-auto shrink-0">
                 <h2 class="text-lg font-bold mb-2 hidden md:block px-2">Settings</h2>
-                <button onclick="switchSettingsTab('appearance')" id="set-tab-appearance" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition active font-bold text-primary">Appearance</button>
+                <button onclick="switchSettingsTab('appearance')" id="set-tab-appearance" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition active font-bold" style="color: var(--accent)">Appearance</button>
                 <button onclick="switchSettingsTab('tags')" id="set-tab-tags" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">Tags</button>
+                <button onclick="switchSettingsTab('shortcuts')" id="set-tab-shortcuts" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">Shortcuts</button>
             </div>
             
             <div class="flex-1 p-6 md:p-8 overflow-y-auto">
+                <!-- Appearance & Theme Color -->
                 <div id="settings-content-appearance" class="settings-tab">
                     <h3 class="text-lg font-bold mb-4">Giao Diện</h3>
                     <div class="flex gap-4 mb-6">
-                        <button onclick="setTheme('light')" class="flex-1 py-4 border-2 rounded-xl flex flex-col items-center gap-2 hover:border-primary transition" id="theme-btn-light"><i class="fa-solid fa-sun text-2xl text-amber-500"></i> <span class="text-sm font-semibold">Sáng</span></button>
-                        <button onclick="setTheme('dark')" class="flex-1 py-4 border-2 rounded-xl flex flex-col items-center gap-2 hover:border-primary transition" id="theme-btn-dark"><i class="fa-solid fa-moon text-2xl text-indigo-500"></i> <span class="text-sm font-semibold">Tối</span></button>
+                        <button onclick="setTheme('light')" class="flex-1 py-4 border-2 rounded-xl flex flex-col items-center gap-2 hover:border-appleBlue transition" id="theme-btn-light"><i class="fa-solid fa-sun text-2xl text-amber-500"></i> <span class="text-sm font-semibold">Sáng</span></button>
+                        <button onclick="setTheme('dark')" class="flex-1 py-4 border-2 rounded-xl flex flex-col items-center gap-2 hover:border-appleBlue transition" id="theme-btn-dark"><i class="fa-solid fa-moon text-2xl text-indigo-500"></i> <span class="text-sm font-semibold">Tối</span></button>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold mb-4">Màu Chủ Đạo (Accent Color)</h3>
+                    <div class="flex gap-3">
+                        <button onclick="setAccentColor('#007AFF')" class="w-10 h-10 rounded-full shadow-md hover:scale-110 transition" style="background-color: #007AFF"></button>
+                        <button onclick="setAccentColor('#8b5cf6')" class="w-10 h-10 rounded-full shadow-md hover:scale-110 transition" style="background-color: #8b5cf6"></button>
+                        <button onclick="setAccentColor('#10b981')" class="w-10 h-10 rounded-full shadow-md hover:scale-110 transition" style="background-color: #10b981"></button>
+                        <button onclick="setAccentColor('#ef4444')" class="w-10 h-10 rounded-full shadow-md hover:scale-110 transition" style="background-color: #ef4444"></button>
+                        <button onclick="setAccentColor('#f59e0b')" class="w-10 h-10 rounded-full shadow-md hover:scale-110 transition" style="background-color: #f59e0b"></button>
                     </div>
                 </div>
 
+                <!-- Tags Management -->
                 <div id="settings-content-tags" class="settings-tab hidden">
                     <h3 class="text-lg font-bold mb-4">Quản Lý Tags</h3>
                     <div id="settings-tags-list" class="space-y-2 mb-6 max-h-64 overflow-y-auto custom-scrollbar"></div>
@@ -584,8 +587,17 @@
                             <label class="text-xs font-semibold mb-1 block">Màu</label>
                             <input type="color" id="new-tag-color" value="#007AFF" class="h-10 w-12 p-1 rounded-lg border border-gray-300 cursor-pointer">
                         </div>
-                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg text-sm transition h-10 hover:opacity-90">Thêm</button>
+                        <button type="submit" class="text-white px-4 py-2 rounded-lg text-sm transition h-10 hover:opacity-90" style="background-color: var(--accent)">Thêm</button>
                     </form>
+                </div>
+
+                <!-- Shortcuts -->
+                <div id="settings-content-shortcuts" class="settings-tab hidden">
+                    <h3 class="text-lg font-bold mb-4">Phím Tắt Hệ Thống</h3>
+                    <div class="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 p-3 rounded-lg text-sm mb-6">
+                        <p><i class="fa-solid fa-circle-info mr-2"></i>Mẹo: Nhấn vào ô phím tắt, sau đó bấm tổ hợp phím bạn muốn trên bàn phím. (Ví dụ: Space, Digit1...)</p>
+                    </div>
+                    <div id="shortcuts-list" class="space-y-2 mb-6"></div>
                 </div>
             </div>
         </div>
@@ -603,7 +615,7 @@
                 <div class="space-y-3">
                     <div>
                         <label class="text-xs font-semibold text-gray-500">Tên nhiệm vụ</label>
-                        <input type="text" id="task-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 ring-primary">
+                        <input type="text" id="task-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2" style="--tw-ring-color: var(--accent)">
                     </div>
                     <div class="flex gap-3">
                         <div class="flex-1">
@@ -619,7 +631,7 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 mt-2">
-                        <input type="checkbox" id="task-fixed" onchange="toggleFixedTaskFields()" class="w-4 h-4 accent-primary">
+                        <input type="checkbox" id="task-fixed" onchange="toggleFixedTaskFields()" class="w-4 h-4">
                         <label class="text-sm font-medium">Cố định (Có giờ nhắc nhở)</label>
                     </div>
                     <div id="fixed-task-fields" class="hidden flex gap-2 mt-2">
@@ -633,7 +645,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="w-full mt-6 bg-primary text-white py-2.5 rounded-xl font-medium transition hover:opacity-90">Lưu Task</button>
+                <button type="submit" class="w-full mt-6 text-white py-2.5 rounded-xl font-medium transition hover:opacity-90" style="background-color: var(--accent)">Lưu Task</button>
             </form>
         </div>
     </div>
@@ -711,7 +723,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="w-full mt-6 bg-primary text-white py-2.5 rounded-xl font-medium transition hover:opacity-90">Thêm Sách</button>
+                <button type="submit" class="w-full mt-6 text-white py-2.5 rounded-xl font-medium transition hover:opacity-90" style="background-color: var(--accent)">Thêm Sách</button>
             </form>
         </div>
     </div>
@@ -721,6 +733,7 @@
         let currentWeekOffset = 0;
         let currentDailyDate = new Date().toISOString().split('T')[0];
         let currentTheme = localStorage.getItem('auraplan_theme') || 'light';
+        let accentColor = localStorage.getItem('auraplan_accent') || '#007AFF';
 
         const defaultState = {
             currentUser: 'Minh',
@@ -746,40 +759,48 @@
                         { id: 'h1', name: 'Nước uống', goal: 8, current: 3, unit: 'ly', color: '#3b82f6', icon: 'fa-droplet', showOnDash: true, step: 1 }
                     ],
                     meals: { breakfast: '', lunch: '', dinner: '', snack: '' },
-                    profile: { name: 'Minh', dob: '', job: '', edu: '', location: '', bio: '', hobbies: '', socials: [], avatar: 'https://i.pravatar.cc/100?img=47' }
+                    focusLinks: [{ name: 'Pomofocus', url: 'https://pomofocus.io/' }],
+                    finance: { balance: 0, savings: 0, targetSavings: 0, transactions: [], wishlist: [] },
+                    appGrid: [],
+                    profile: { name: 'Minh', dob: '', job: '', edu: '', location: '', bio: '', hobbies: '', socials: [], avatar: 'https://i.pravatar.cc/100?img=47' },
+                    shortcuts: { 
+                        'Space': 'togglePomo', 
+                        'KeyN': 'openTaskModal(currentDailyDate)', 
+                        'Digit1': 'openFeature("daily")',
+                        'Digit2': 'openFeature("habits")',
+                        'Digit3': 'openFeature("focus")'
+                    }
                 }
             }
         };
 
-        let appState = JSON.parse(localStorage.getItem('auraplan_v11')) || defaultState;
+        let appState = JSON.parse(localStorage.getItem('auraplan_v10')) || defaultState;
 
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             applyTheme(currentTheme);
+            applyAccent(accentColor);
             checkDailyLogin();
             updateUserUI();
             renderDashboard();
+            renderShortcuts();
             populateAllTagDropdowns();
             setupBibleVerse();
             setupDragScroll();
+            initFocusChart();
             
             document.addEventListener('click', (e) => {
                 if(!document.getElementById('user-menu-container').contains(e.target)) closeUserMenu();
             });
             
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') { 
-                    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); 
-                    closeSidebar(); 
-                }
-            });
+            document.addEventListener('keydown', handleGlobalShortcuts);
         });
 
         function saveState() {
-            localStorage.setItem('auraplan_v11', JSON.stringify(appState));
+            localStorage.setItem('auraplan_v10', JSON.stringify(appState));
         }
 
-        // --- THEME ---
+        // --- THEME & ACCENT ---
         function applyTheme(t) { 
             if(t==='dark' || (t==='system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); 
             else document.documentElement.classList.remove('dark'); 
@@ -789,8 +810,67 @@
         function setThemeButtonsUI() {
             ['light', 'dark'].forEach(t => {
                 const btn = document.getElementById(`theme-btn-${t}`);
-                if(btn) { if(t === currentTheme) btn.classList.add('border-primary'); else btn.classList.remove('border-primary'); }
+                if(btn) { if(t === currentTheme) btn.classList.add('border-appleBlue'); else btn.classList.remove('border-appleBlue'); }
             });
+        }
+        
+        function applyAccent(color) {
+            document.documentElement.style.setProperty('--accent', color);
+            document.documentElement.style.setProperty('--accent-light', color + '33'); 
+        }
+        function setAccentColor(color) {
+            accentColor = color; applyAccent(color); localStorage.setItem('auraplan_accent', color);
+        }
+
+        // --- SHORTCUTS ---
+        function handleGlobalShortcuts(e) {
+            if(['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+            const key = e.code;
+            const action = appState.users[appState.currentUser].shortcuts[key];
+            if(action) { e.preventDefault(); try { eval(action); } catch(err) { console.error(err); } }
+            if(e.key === 'Escape') { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); closeSidebar(); }
+        }
+
+        function renderShortcuts() {
+            const list = document.getElementById('shortcuts-list');
+            const shortcuts = appState.users[appState.currentUser].shortcuts;
+            const actionLabels = {
+                'togglePomo': 'Bật/Tắt Pomodoro', 'openTaskModal(currentDailyDate)': 'Thêm Task', 
+                'openFeature("daily")': 'Daily Planner', 'openFeature("habits")': 'Habit Tracker', 'openFeature("focus")': 'Focus Space'
+            };
+            list.innerHTML = Object.keys(shortcuts).map(key => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:item">
+                    <span class="font-medium text-sm">${actionLabels[shortcuts[key]] || shortcuts[key]}</span>
+                    <button onclick="captureShortcut('${key}')" id="shortcut-btn-${key}" class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-bold shadow-sm min-w-[80px] transition focus:ring-2 focus:ring-appleBlue">${key}</button>
+                </div>
+            `).join('');
+        }
+
+        let isCapturingShortcut = false;
+        function captureShortcut(oldKey) {
+            if(isCapturingShortcut) return;
+            isCapturingShortcut = true;
+            const btn = document.getElementById(`shortcut-btn-${oldKey}`);
+            btn.innerText = 'Bấm phím...';
+            btn.classList.add('bg-blue-100', 'text-blue-700', 'border-blue-300');
+
+            const captureListener = (e) => {
+                e.preventDefault();
+                const newKey = e.code;
+                if(newKey === 'Escape') { reset(); return; }
+
+                const shortcuts = appState.users[appState.currentUser].shortcuts;
+                const action = shortcuts[oldKey];
+                delete shortcuts[oldKey];
+                shortcuts[newKey] = action;
+                saveState(); renderShortcuts(); reset();
+            };
+
+            const reset = () => {
+                isCapturingShortcut = false;
+                document.removeEventListener('keydown', captureListener, true);
+            };
+            document.addEventListener('keydown', captureListener, true);
         }
 
         // --- TAGS ---
@@ -856,6 +936,7 @@
             if(id === 'reading-modal') renderReadingView();
             if(id === 'health-modal') renderHealthView();
             if(id === 'profile-modal') renderProfile();
+            if(id === 'appgrid-modal') renderAppGrid();
             if(id === 'streak-modal') renderStreakCalendar();
             if(id === 'settings-modal') { switchSettingsTab('appearance'); setThemeButtonsUI(); }
         }
@@ -933,11 +1014,11 @@
                 `}).join('');
 
                 htmlStr += `
-                    <div class="min-w-[260px] flex-1 bg-${dayColors[i]}-50/80 dark:bg-${dayColors[i]}-900/10 border border-${dayColors[i]}-100 dark:border-${dayColors[i]}-900/30 rounded-2xl p-3 flex flex-col cursor-pointer transition-all duration-150 ${dateStr === realToday ? 'today-col bg-white dark:bg-gray-800' : 'hover:shadow-md'}" onclick="if(!event.target.closest('input, button')) { currentDailyDate='${dateStr}'; openFeature('daily'); }">
+                    <div class="min-w-[260px] flex-1 bg-${dayColors[i]}-50/80 dark:bg-${dayColors[i]}-900/10 border border-${dayColors[i]}-100 dark:border-${dayColors[i]}-900/30 rounded-2xl p-3 flex flex-col cursor-pointer transition-all duration-300 ${dateStr === realToday ? 'today-col bg-white dark:bg-gray-800' : 'hover:shadow-lg hover:-translate-y-1'}" onclick="if(!event.target.closest('input, button')) { currentDailyDate='${dateStr}'; openFeature('daily'); }">
                         <div class="flex justify-between items-center mb-3">
                             <div>
                                 <p class="text-xs font-bold text-${dayColors[i]}-500 uppercase">${dayNames[i]}</p>
-                                <p class="text-lg font-bold ${dateStr === realToday ? 'text-primary' : ''}">${d.getDate()}/${d.getMonth()+1}</p>
+                                <p class="text-lg font-bold ${dateStr === realToday ? 'text-appleBlue' : ''}">${d.getDate()}/${d.getMonth()+1}</p>
                             </div>
                             <div class="relative w-10 h-10 flex items-center justify-center">
                                 <svg class="w-10 h-10 transform -rotate-90">
@@ -955,15 +1036,7 @@
                 `;
             }
             container.innerHTML = htmlStr;
-            
-            // Scroll to today without smooth behavior for performance
-            setTimeout(() => { 
-                if(container.children[todayIndex]) {
-                    const card = container.children[todayIndex];
-                    container.scrollLeft = card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2;
-                }
-            }, 50);
-
+            setTimeout(() => { if(container.children[todayIndex]) container.children[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }, 100);
             renderDashboardWidgets();
         }
 
@@ -998,17 +1071,19 @@
             document.getElementById('mini-habit-bar').style.width = `${percent}%`;
         }
 
-        // --- DAILY PLANNER & TIME BLOCK ---
+        // --- DAILY PLANNER & TIME BLOCK (FIXED) ---
         function renderDailyView(dateStr) {
             document.getElementById('daily-date-picker').value = dateStr;
             const user = appState.users[appState.currentUser];
 
+            // Tasks
             const tasks = user.tasks[dateStr] || [];
             document.getElementById('daily-task-list').innerHTML = tasks.length ? tasks.map(t => {
                 const tagColor = user.tags[t.tag]?.color || '#gray';
                 return `<div class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-item"><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${dateStr}', '${t.id}')" class="w-5 h-5 accent-emerald-500"><div class="flex-1"><p class="${t.done ? 'line-through text-gray-400' : 'font-medium'}">${t.title}</p><div class="flex gap-2 mt-1"><span class="text-[10px] px-2 py-0.5 rounded text-white" style="background-color: ${tagColor}">${t.tag}</span><span class="text-[10px] font-bold text-red-500">🍅 x ${t.pomos}</span>${t.isFixed ? `<span class="text-[10px] font-bold text-indigo-500"><i class="fa-regular fa-clock"></i> ${t.startTime}</span>` : ''}</div></div><button onclick="deleteTask('${dateStr}', '${t.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></div>`;
             }).join('') : `<p class="text-sm text-gray-500 text-center py-4">Không có task nào.</p>`;
 
+            // Time Blocks (Timeline)
             const blocks = user.timeBlocks[dateStr] || [];
             let timelineHtml = '';
             for(let i=0; i<24; i++) {
@@ -1034,7 +1109,7 @@
             }
         }
 
-        // --- HABIT ---
+        // --- HABIT (FIXED) ---
         function renderHabits() {
             const tbody = document.getElementById('habit-table-body');
             const habits = appState.users[appState.currentUser].habits;
@@ -1047,17 +1122,31 @@
                 for(let i=1; i<=daysInMonth; i++) {
                     const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                     const isDone = habits[habitName].history[dateStr];
-                    boxes += `<td class="p-1"><div onclick="toggleHabit('${habitName}', '${dateStr}')" class="habit-box mx-auto flex items-center justify-center ${isDone ? 'done' : 'bg-transparent hover:scale-110'}" style="${isDone ? `background-color: ${color};` : ''}"></div></td>`;
+                    boxes += `<td class="p-1"><div onclick="toggleHabit('${habitName}', '${dateStr}')" class="habit-box mx-auto flex items-center justify-center ${isDone ? 'done' : 'bg-transparent hover:scale-110'}" style="${isDone ? `background-color: ${color}; box-shadow: 0 2px 5px ${color}66;` : ''}"></div></td>`;
                 }
-                // Thêm nút xóa (Req 1)
-                return `<tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 group">
-                    <td class="p-2 font-medium text-sm truncate max-w-[120px] flex items-center justify-between">
-                        ${habitName}
-                        <button onclick="deleteHabit('${habitName}')" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition"><i class="fa-solid fa-trash text-xs"></i></button>
-                    </td>
-                    ${boxes}
-                </tr>`;
+                return `<tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50"><td class="p-2 font-medium text-sm truncate max-w-[120px]">${habitName}</td>${boxes}</tr>`;
             }).join('');
+
+            // Ring Update
+            let totalChecks = 0, totalPossible = Object.keys(habits).length * daysInMonth;
+            Object.values(habits).forEach(h => { Object.keys(h.history).forEach(d => { if(h.history[d]) totalChecks++; }); });
+            const percent = totalPossible === 0 ? 0 : Math.round((totalChecks / totalPossible) * 100);
+            document.getElementById('habit-month-percent').innerText = `${percent}%`;
+            document.getElementById('habit-month-ring').style.strokeDashoffset = 176 - ((percent / 100) * 176);
+            document.getElementById('habit-week-percent').innerText = `${percent}%`; // Rút gọn
+            document.getElementById('habit-week-ring').style.strokeDashoffset = 176 - ((percent / 100) * 176);
+
+            // Chart Update
+            const ctx = document.getElementById('habitMonthlyChart').getContext('2d');
+            if(window.habitChart) window.habitChart.destroy();
+            const labels = [], dataPoints = [];
+            for(let i=1; i<=daysInMonth; i++) {
+                labels.push(i);
+                const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                let count = 0; Object.values(habits).forEach(h => { if(h.history[dateStr]) count++; });
+                dataPoints.push(count);
+            }
+            window.habitChart = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ data: dataPoints, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.2)', tension: 0.4, fill: true, pointRadius: 0, pointHoverRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false, beginAtZero: true } } } });
         }
 
         function toggleHabit(name, dateStr) {
@@ -1077,15 +1166,7 @@
             }
         }
 
-        // Thêm nút xóa Habit
-        function deleteHabit(name) {
-            if(confirm(`Xóa thói quen "${name}"?`)) {
-                delete appState.users[appState.currentUser].habits[name];
-                saveState(); renderHabits(); renderDashboardWidgets();
-            }
-        }
-
-        // --- HEALTH ---
+        // --- HEALTH (FIXED) ---
         function renderHealthView() {
             const list = document.getElementById('health-metrics-list');
             const health = appState.users[appState.currentUser].health;
@@ -1098,7 +1179,7 @@
                             <div><p class="font-bold text-sm">${h.name}</p><p class="text-xs text-gray-500">Mục tiêu: ${h.goal} ${h.unit}</p></div>
                         </div>
                         <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="checkbox" ${h.showOnDash ? 'checked' : ''} onchange="toggleHealthDash('${h.id}')" class="w-3 h-3 accent-primary">
+                            <input type="checkbox" ${h.showOnDash ? 'checked' : ''} onchange="toggleHealthDash('${h.id}')" class="w-3 h-3 accent-appleBlue">
                             <span class="text-[10px] text-gray-400">Hiển thị</span>
                         </label>
                     </div>
@@ -1177,7 +1258,7 @@
             const largeContainer = document.getElementById('current-reading-large');
             if (current) {
                 const p = Math.min(Math.round((current.current / current.pages) * 100), 100);
-                largeContainer.innerHTML = `<div class="w-40 h-64 rounded-xl shadow-2xl overflow-hidden shrink-0 relative bg-gray-200 dark:bg-gray-700"><img src="${current.cover}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'" class="w-full h-full object-cover"></div><div class="flex-1 flex flex-col justify-center"><span class="text-xs font-bold text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded w-max mb-2">ĐANG ĐỌC</span><h2 class="text-2xl font-bold mb-1">${current.title}</h2><p class="text-gray-500 mb-4 text-sm">${current.author}</p><div class="flex items-end gap-4 mb-2"><span class="text-3xl font-extrabold">${current.current}</span><span class="text-gray-500 mb-1">/ ${current.pages} trang</span><span class="ml-auto font-bold text-emerald-500 text-xl">${p}%</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4"><div class="bg-emerald-500 h-2 rounded-full" style="width: ${p}%"></div></div><form onsubmit="updateReadingProgress(event, ${current.id})" class="flex gap-3"><input type="number" id="page-input-${current.id}" min="${current.current}" max="${current.pages}" placeholder="Trang đang đọc..." class="flex-1 p-2 text-sm rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 outline-none"><button type="submit" class="bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:opacity-90 transition">Lưu</button></form></div>`;
+                largeContainer.innerHTML = `<div class="w-40 h-64 rounded-xl shadow-2xl overflow-hidden shrink-0 relative bg-gray-200 dark:bg-gray-700"><img src="${current.cover}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'" class="w-full h-full object-cover"></div><div class="flex-1 flex flex-col justify-center"><span class="text-xs font-bold text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded w-max mb-2">ĐANG ĐỌC</span><h2 class="text-2xl font-bold mb-1">${current.title}</h2><p class="text-gray-500 mb-4 text-sm">${current.author}</p><div class="flex items-end gap-4 mb-2"><span class="text-3xl font-extrabold">${current.current}</span><span class="text-gray-500 mb-1">/ ${current.pages} trang</span><span class="ml-auto font-bold text-emerald-500 text-xl">${p}%</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4"><div class="bg-emerald-500 h-2 rounded-full" style="width: ${p}%"></div></div><form onsubmit="updateReadingProgress(event, ${current.id})" class="flex gap-3"><input type="number" id="page-input-${current.id}" min="${current.current}" max="${current.pages}" placeholder="Trang đang đọc..." class="flex-1 p-2 text-sm rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 outline-none"><button type="submit" class="text-white px-4 py-2 rounded-xl text-sm font-medium hover:opacity-90 transition" style="background-color: var(--accent)">Lưu</button></form></div>`;
             } else { largeContainer.innerHTML = `<p class="p-10 text-gray-500">Chưa có sách nào đang đọc chính.</p>`; }
 
             document.getElementById('reading-list-parallel').innerHTML = parallel.length ? parallel.map(b => `<div class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer hover-item border border-transparent hover:border-gray-200 dark:hover:border-gray-700" onclick="setAsReading(${b.id})"><img src="${b.cover}" class="w-10 h-14 object-cover rounded shadow"><div class="min-w-0 flex-1"><p class="font-bold text-sm truncate">${b.title}</p><p class="text-xs text-gray-500">${b.current}/${b.pages} tr</p></div></div>`).join('') : `<p class="text-sm text-gray-500">Không có.</p>`;
@@ -1223,115 +1304,41 @@
             saveState(); closeModal('add-book-modal'); renderReadingView(); document.getElementById('add-book-form').reset();
         }
 
-        // --- POMODORO (ĐÃ SỬA LỖI HOÀN TOÀN) ---
+        // --- POMODORO & MISC ---
         let pomoTime = 25 * 60; let pomoTotal = 25 * 60; let pomoInterval = null; let isPomoRunning = false; let pomoMode = 'focus'; let pomoCount = 0;
-
         function togglePomo() {
-            const mainBtn = document.getElementById('main-pomo-btn'); 
-            const miniBtn = document.getElementById('mini-pomo-btn');
-            
+            const mainBtn = document.getElementById('main-pomo-btn'); const miniBtn = document.getElementById('mini-pomo-btn');
             if (isPomoRunning) {
                 clearInterval(pomoInterval);
-                if(mainBtn) mainBtn.innerHTML = '<i class="fa-solid fa-play text-2xl ml-1"></i>';
-                if(miniBtn) miniBtn.innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>';
+                if(mainBtn) mainBtn.innerHTML = '<i class="fa-solid fa-play text-xl ml-1"></i>'; if(miniBtn) miniBtn.innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>';
             } else {
-                if(mainBtn) mainBtn.innerHTML = '<i class="fa-solid fa-pause text-2xl"></i>';
-                if(miniBtn) miniBtn.innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
-                pomoInterval = setInterval(() => { 
-                    if (pomoTime > 0) { pomoTime--; updatePomodoroUI(); } 
-                    else { handlePomoComplete(); } 
-                }, 1000);
+                if(mainBtn) mainBtn.innerHTML = '<i class="fa-solid fa-pause text-xl"></i>'; if(miniBtn) miniBtn.innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
+                pomoInterval = setInterval(() => { if (pomoTime > 0) { pomoTime--; updatePomodoroUI(); } else { handlePomoComplete(); } }, 1000);
             }
             isPomoRunning = !isPomoRunning;
         }
-
-        function resetPomo() { 
-            clearInterval(pomoInterval); isPomoRunning = false; 
-            pomoTime = pomoMode === 'focus' ? 25*60 : (pomoMode === 'shortBreak' ? 5*60 : 15*60); 
-            pomoTotal = pomoTime; 
-            if(document.getElementById('main-pomo-btn')) document.getElementById('main-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-2xl ml-1"></i>'; 
-            if(document.getElementById('mini-pomo-btn')) document.getElementById('mini-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>'; 
-            updatePomodoroUI(); 
-        }
-
-        function handlePomoAction() { 
-            if(pomoMode === 'focus') { pomoTime = 0; handlePomoComplete(); } 
-            else { pomoMode = 'focus'; pomoTime = 25*60; pomoTotal = pomoTime; updatePomodoroUI(); } 
-        }
-
-        function handlePomoComplete() { 
-            clearInterval(pomoInterval); isPomoRunning = false; 
-            if(pomoMode === 'focus') { 
-                pomoCount++; 
-                const user = appState.users[appState.currentUser]; 
-                const dayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
-                user.pomodoroStats[dayIndex] = (user.pomodoroStats[dayIndex] || 0) + 1; 
-                const plants = ['🌱', '🌿', '🌳', '🌻', '🌸']; 
-                user.garden.push(plants[Math.floor(Math.random() * plants.length)]); 
-                saveState(); renderGarden(); 
-                if(pomoCount % 4 === 0) { pomoMode = 'longBreak'; pomoTime = 15*60; } 
-                else { pomoMode = 'shortBreak'; pomoTime = 5*60; } 
-            } else { pomoMode = 'focus'; pomoTime = 25*60; } 
-            pomoTotal = pomoTime; 
-            if(document.getElementById('main-pomo-btn')) document.getElementById('main-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-2xl ml-1"></i>'; 
-            if(document.getElementById('mini-pomo-btn')) document.getElementById('mini-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>'; 
-            updatePomodoroUI(); 
-        }
-
-        function updatePomodoroUI() { 
-            const mins = Math.floor(pomoTime / 60); 
-            const secs = pomoTime % 60; 
-            const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`; 
-            
-            if(document.getElementById('main-timer-display')) document.getElementById('main-timer-display').innerText = timeStr; 
-            if(document.getElementById('mini-timer-display')) document.getElementById('mini-timer-display').innerText = timeStr; 
-            
-            const stateStr = pomoMode === 'focus' ? 'Deep Work' : (pomoMode === 'shortBreak' ? 'Short Break' : 'Long Break'); 
-            if(document.getElementById('pomo-state')) document.getElementById('pomo-state').innerText = stateStr; 
-            if(document.getElementById('mini-pomo-state')) document.getElementById('mini-pomo-state').innerText = stateStr; 
-            
-            const actionBtn = document.getElementById('pomo-action-btn'); 
-            if(actionBtn) { 
-                if(pomoMode === 'focus') { actionBtn.innerText = 'Mark as Done'; actionBtn.className = 'text-sm font-bold text-green-600 hover:underline'; } 
-                else { actionBtn.innerText = 'Skip Break'; actionBtn.className = 'text-sm font-bold text-orange-500 hover:underline'; } 
-            } 
-            
-            const progress = 1 - (pomoTime / pomoTotal); 
-            if(document.getElementById('main-pomo-ring')) document.getElementById('main-pomo-ring').style.strokeDashoffset = 804 - (progress * 804); 
-            if(document.getElementById('mini-pomo-ring')) document.getElementById('mini-pomo-ring').style.strokeDashoffset = 452 - (progress * 452); 
-        }
-
-        function renderGarden() { 
-            const garden = appState.users[appState.currentUser].garden; 
-            if(document.getElementById('mini-garden')) document.getElementById('mini-garden').innerHTML = garden.map(p => `<span>${p}</span>`).join(''); 
-            if(garden.length > 0) { 
-                if(document.getElementById('mini-tree')) document.getElementById('mini-tree').innerText = garden[garden.length - 1]; 
-                if(document.getElementById('main-tree')) document.getElementById('main-tree').innerText = garden[garden.length - 1]; 
-            } 
-        }
-
-        function setPomoPreset(f, b) { pomoTime = f * 60; pomoTotal = f * 60; pomoMode = 'focus'; updatePomodoroUI(); }
-        function updateAttachedTaskDisplay() {}
-        
+        function resetPomo() { clearInterval(pomoInterval); isPomoRunning = false; pomoTime = pomoMode === 'focus' ? 25*60 : (pomoMode === 'shortBreak' ? 5*60 : 15*60); pomoTotal = pomoTime; document.getElementById('main-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-xl ml-1"></i>'; document.getElementById('mini-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>'; updatePomodoroUI(); }
+        function handlePomoAction() { if(pomoMode === 'focus') { pomoTime = 0; handlePomoComplete(); } else { pomoMode = 'focus'; pomoTime = 25*60; pomoTotal = pomoTime; updatePomodoroUI(); } }
+        function handlePomoComplete() { clearInterval(pomoInterval); isPomoRunning = false; if(pomoMode === 'focus') { pomoCount++; const user = appState.users[appState.currentUser]; const dayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; user.pomodoroStats[dayIndex] = (user.pomodoroStats[dayIndex] || 0) + 1; const plants = ['🌱', '🌿', '🌳', '🌻', '🌸']; user.garden.push(plants[Math.floor(Math.random() * plants.length)]); saveState(); renderGarden(); if(pomoCount % 4 === 0) { pomoMode = 'longBreak'; pomoTime = 15*60; } else { pomoMode = 'shortBreak'; pomoTime = 5*60; } } else { pomoMode = 'focus'; pomoTime = 25*60; } pomoTotal = pomoTime; document.getElementById('main-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-xl ml-1"></i>'; document.getElementById('mini-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>'; updatePomodoroUI(); }
+        function updatePomodoroUI() { const mins = Math.floor(pomoTime / 60); const secs = pomoTime % 60; const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`; document.getElementById('main-timer-display').innerText = timeStr; document.getElementById('mini-timer-display').innerText = timeStr; const stateStr = pomoMode === 'focus' ? 'Deep Work' : (pomoMode === 'shortBreak' ? 'Short Break' : 'Long Break'); document.getElementById('pomo-state').innerText = stateStr; document.getElementById('mini-pomo-state').innerText = stateStr; const actionBtn = document.getElementById('pomo-action-btn'); if(actionBtn) { if(pomoMode === 'focus') { actionBtn.innerText = 'Mark as Done'; actionBtn.className = 'text-sm font-bold text-green-600 hover:underline'; } else { actionBtn.innerText = 'Skip Break'; actionBtn.className = 'text-sm font-bold text-orange-500 hover:underline'; } } const progress = 1 - (pomoTime / pomoTotal); document.getElementById('main-pomo-ring').style.strokeDashoffset = 703 - (progress * 703); document.getElementById('mini-pomo-ring').style.strokeDashoffset = 452 - (progress * 452); }
+        function renderGarden() { const garden = appState.users[appState.currentUser].garden; document.getElementById('mini-garden').innerHTML = garden.map(p => `<span>${p}</span>`).join(''); if(garden.length > 0) { document.getElementById('mini-tree').innerText = garden[garden.length - 1]; document.getElementById('main-tree').innerText = garden[garden.length - 1]; } }
         function setupBibleVerse() { const verses = [{ ref: "Thi Thiên 23:1", text: "Đức Giê-hô-va là Đấng chăn giữ tôi..." }, { ref: "Phi-líp 4:13", text: "Tôi làm được mọi sự..." }]; const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24); const v = verses[dayOfYear % verses.length]; document.getElementById('bible-verse-ref').innerText = v.ref; document.getElementById('bible-verse-text').innerText = `"${v.text}"`; }
-        
+        function initFocusChart() { const ctxFocus = document.getElementById('focusChart')?.getContext('2d'); if(ctxFocus && !window.myChart) { window.myChart = new Chart(ctxFocus, { type: 'bar', data: { labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'], datasets: [{ data: appState.users[appState.currentUser].pomodoroStats, backgroundColor: accentColor, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); } }
         function toggleUserMenu() { document.getElementById('user-menu').classList.toggle('hidden'); }
         function closeUserMenu() { document.getElementById('user-menu').classList.add('hidden'); }
-        function updateUserUI() { updateGreeting(); document.getElementById('user-list-dropdown').innerHTML = `<div class="px-3 py-2 text-sm font-bold text-primary">${appState.currentUser} (Bạn)</div>`; }
-        function switchSettingsTab(tab) { ['appearance', 'tags'].forEach(t => { document.getElementById(`settings-content-${t}`).classList.add('hidden'); document.getElementById(`set-tab-${t}`).classList.remove('active'); }); document.getElementById(`settings-content-${tab}`).classList.remove('hidden'); document.getElementById(`set-tab-${tab}`).classList.add('active'); if(tab === 'tags') renderSettingsTags(); }
-        
-        function setupDragScroll() { 
-            const slider = document.getElementById('schedule-container'); 
-            let isDown = false, startX, scrollLeft; 
-            slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; }); 
-            slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); }); 
-            slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); }); 
-            slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; slider.scrollLeft = scrollLeft - (x - startX) * 1.5; }); 
-        }
-        
+        function updateUserUI() { updateGreeting(); document.getElementById('user-list-dropdown').innerHTML = `<div class="px-3 py-2 text-sm font-bold" style="color: var(--accent)">${appState.currentUser} (Bạn)</div>`; }
+        function switchSettingsTab(tab) { ['appearance', 'tags', 'shortcuts'].forEach(t => { document.getElementById(`settings-content-${t}`).classList.add('hidden'); document.getElementById(`set-tab-${t}`).classList.remove('active'); }); document.getElementById(`settings-content-${tab}`).classList.remove('hidden'); document.getElementById(`set-tab-${tab}`).classList.add('active'); if(tab === 'tags') renderSettingsTags(); }
+        function setupDragScroll() { const slider = document.getElementById('schedule-container'); let isDown = false, startX, scrollLeft; slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; }); slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); }); slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); }); slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; slider.scrollLeft = scrollLeft - (x - startX) * 2; }); }
         function changeWeek(dir) { currentWeekOffset += dir; renderDashboard(); }
+        function exportICS(range) { alert('Tính năng Export đang phát triển.'); }
+        function openSpotlight() { document.getElementById('spotlight-modal').classList.add('active'); document.getElementById('spotlight-input').focus(); }
+        function handleSpotlight() {}
+        function editReadingGoal() {}
+        function addTransaction(e) { e.preventDefault(); }
+        function addWishlistItem() {}
+        function toggleFixedTaskFields() { const isChecked = document.getElementById('task-fixed').checked; document.getElementById('fixed-task-fields').classList.toggle('hidden', !isChecked); }
         
-        // --- MODAL HELPERS ---
+        // Add Task/Timeblock Handlers Fix
         function openTaskModal(dateStr) { 
             document.getElementById('task-date-input').value = dateStr || new Date().toISOString().split('T')[0]; 
             document.getElementById('task-form').reset();
@@ -1362,12 +1369,6 @@
             document.getElementById('timeblock-form').reset();
             populateAllTagDropdowns(); openModal('timeblock-modal');
         }
-        function toggleFixedTaskFields() { const isChecked = document.getElementById('task-fixed').checked; document.getElementById('fixed-task-fields').classList.toggle('hidden', !isChecked); }
-        function openSpotlight() { document.getElementById('spotlight-modal').classList.add('active'); document.getElementById('spotlight-input').focus(); }
-        function saveProfile(e) { e.preventDefault(); alert('Tính năng đang phát triển!'); }
-        function renderProfile() {}
-        function checkDailyLogin() {}
-        function renderStreakCalendar() {}
     </script>
 </body>
 </html>
