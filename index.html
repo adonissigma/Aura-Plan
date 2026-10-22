@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraPlan - Ultimate Dashboard</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%236366f1%22/><text x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22white%22>∞</text></svg>">
+    <title>AuraPlan - Pure Performance</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007AFF%22/><text x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22white%22>∞</text></svg>">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
@@ -21,79 +17,72 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { appleGray: '#F5F5F7', appleDark: '#121212', appleBlue: '#007AFF' }
+                    colors: { appleGray: '#F5F5F7', appleDark: '#121212', primary: '#007AFF' }
                 }
             }
         }
     </script>
 
     <style>
-        /* Fix Layout Shift */
+        /* TỐI ƯU HIỆU NĂNG TUYỆT ĐỐI */
         html, body { height: 100vh; overflow: hidden; }
         body { display: flex; flex-direction: column; }
         header { flex-shrink: 0; }
-        main { flex: 1; overflow-y: auto; min-height: 0; position: relative; scroll-behavior: smooth; }
+        main { flex: 1; overflow-y: auto; min-height: 0; position: relative; }
 
-        /* Custom Scrollbar */
+        /* Cuộn mượt */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #475569; }
 
-        /* Glassmorphism & Dark Mode */
+        /* Bỏ Blur (Gây lag), dùng màu đặc */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
-            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.2s, border-color 0.2s;
         }
         .dark .glass-panel {
-            background: rgba(30, 30, 35, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            background: rgba(28, 28, 30, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
         }
         
-        /* Global Hover */
-        .hover-lift { transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
-        .hover-item { transition: background-color 0.2s, transform 0.2s; }
-        .hover-item:hover { background-color: rgba(0, 0, 0, 0.04); transform: translateX(3px); }
-        .dark .hover-item:hover { background-color: rgba(255, 255, 255, 0.05); }
+        /* Hiệu ứng hover nhẹ, không gây lag */
+        .hover-lift { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .hover-item { transition: background-color 0.15s ease; }
+        .hover-item:hover { background-color: rgba(0, 0, 0, 0.04); }
+        .dark .hover-item:hover { background-color: rgba(255, 255, 255, 0.06); }
 
         /* Modals */
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); 
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); /* Blur chỉ dùng ở đây */
             z-index: 100; display: flex; align-items: center; justify-content: center; 
-            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; 
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease; 
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { transform: scale(0.95) translateY(20px); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
+        .modal-content { transform: scale(0.95); transition: transform 0.2s ease; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
 
-        /* Progress Ring */
-        .progress-ring__circle { transition: stroke-dashoffset 0.8s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
-
-        /* Habit Box */
-        .habit-box { width: 24px; height: 24px; border-radius: 6px; cursor: pointer; transition: all 0.2s; border: 1px solid #e5e7eb; }
+        .progress-ring__circle { transition: stroke-dashoffset 0.5s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
+        .habit-box { width: 22px; height: 22px; border-radius: 4px; cursor: pointer; transition: all 0.15s; border: 1px solid #e5e7eb; }
         .dark .habit-box { border-color: #374151; }
         .habit-box.done { border: none; }
         
-        /* Today Highlight */
-        .today-col { border: 2px solid #007AFF !important; box-shadow: 0 8px 25px -5px rgba(0, 122, 255, 0.25) !important; transform: scale(1.01); z-index: 10; }
-        
-        /* Fixed Task */
+        .today-col { border: 2px solid #007AFF !important; box-shadow: 0 4px 15px -3px rgba(0, 122, 255, 0.2) !important; z-index: 10; }
         .fixed-task { background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-left: 3px solid #6366f1; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; }
         .dark .fixed-task { background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3); }
         
-        /* Drag Scroll */
+        /* Kéo thả mượt mà, không dùng scroll-snap gây sượng */
         .drag-scroll { cursor: grab; user-select: none; }
-        .drag-scroll.active { cursor: grabbing; scroll-behavior: auto; }
+        .drag-scroll.active { cursor: grabbing; }
 
         /* App Grid */
         .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 1.5rem; }
-        .app-icon-container { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; cursor: pointer; transition: transform 0.2s; position: relative; }
+        .app-icon-container { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; cursor: pointer; position: relative; transition: transform 0.2s; }
         .app-icon-container:hover { transform: scale(1.05); }
         .app-icon-container:hover .delete-app-btn { opacity: 1; }
         .app-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: #fff; overflow: hidden; }
@@ -103,39 +92,36 @@
 </head>
 <body class="bg-appleGray text-gray-800 dark:bg-appleDark dark:text-gray-100 font-sans antialiased transition-colors duration-300">
 
-    <div class="fixed inset-0 -z-10 bg-gradient-to-br from-indigo-50/50 to-pink-50/50 dark:from-[#1a1a1a] dark:to-[#121212] transition-colors duration-300"></div>
+    <div class="fixed inset-0 -z-10 bg-[#F5F5F7] dark:bg-[#121212] transition-colors duration-300"></div>
 
     <!-- Header -->
-    <header class="glass-panel h-16 flex items-center justify-between px-4 md:px-6 z-40 border-b border-white/20 dark:border-gray-800">
+    <header class="glass-panel h-16 flex items-center justify-between px-4 md:px-6 z-40 border-b border-gray-200 dark:border-gray-800">
         <div class="flex items-center gap-4 cursor-pointer" onclick="switchView('dashboard')">
             <button onclick="event.stopPropagation(); toggleSidebar()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"><i class="fa-solid fa-bars text-gray-600 dark:text-gray-300"></i></button>
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
                 <i class="fa-solid fa-infinity text-lg"></i>
             </div>
             <h1 class="text-xl font-bold tracking-tight hidden sm:block">AuraPlan</h1>
         </div>
 
         <div class="flex items-center gap-2 md:gap-3">
-            <div onclick="openSpotlight()" class="hidden md:flex bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2 items-center gap-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition hover:scale-105">
+            <div onclick="openSpotlight()" class="hidden md:flex bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2 items-center gap-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition">
                 <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
                 <span class="text-sm text-gray-500 w-24">Search...</span>
             </div>
 
-            <!-- App Grid -->
-            <button onclick="openFeature('appgrid')" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center hover:scale-110" title="App Grid">
+            <button onclick="openFeature('appgrid')" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center" title="App Grid">
                 <i class="fa-solid fa-border-all text-gray-600 dark:text-gray-300 text-lg"></i>
             </button>
 
-            <!-- Theme Toggle -->
-            <button onclick="toggleTheme()" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center hover:scale-110">
+            <button onclick="toggleTheme()" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center">
                 <i id="theme-icon" class="fa-solid fa-moon dark:hidden text-gray-600"></i>
                 <i id="theme-icon-dark" class="fa-solid fa-sun hidden dark:block text-yellow-400"></i>
             </button>
 
-            <!-- User Profile Dropdown -->
             <div class="relative" id="user-menu-container">
                 <button onclick="toggleUserMenu()" class="flex items-center gap-2 outline-none">
-                    <img src="https://i.pravatar.cc/100?img=47" class="w-9 h-9 rounded-full border-2 border-white dark:border-gray-600 shadow-sm cursor-pointer hover:scale-105 transition">
+                    <img id="header-avatar" src="https://i.pravatar.cc/100?img=47" class="w-9 h-9 rounded-full border-2 border-white dark:border-gray-600 shadow-sm cursor-pointer">
                 </button>
                 <div id="user-menu" class="hidden absolute right-0 mt-3 w-48 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 z-50 overflow-hidden">
                     <div class="p-2">
@@ -151,10 +137,10 @@
     </header>
 
     <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 opacity-0 pointer-events-none transition-opacity"></div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 z-40 opacity-0 pointer-events-none transition-opacity"></div>
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 glass-panel z-50 flex flex-col p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300">
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-64 glass-panel z-50 flex flex-col p-4 overflow-y-auto transform -translate-x-full transition-transform duration-200 shadow-2xl">
         <div class="flex justify-between items-center mb-6 px-2">
             <h2 class="text-lg font-bold">Menu</h2>
             <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"><i class="fa-solid fa-xmark"></i></button>
@@ -165,7 +151,6 @@
             <button onclick="openFeature('streak')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-fire w-6 text-orange-500"></i> My Streak</button>
             <button onclick="openFeature('reading')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-book w-6 text-blue-500"></i> Reading Library</button>
             <button onclick="openFeature('health')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-heart-pulse w-6 text-red-500"></i> Health Tracker</button>
-            <button onclick="openFeature('finance')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-wallet w-6 text-yellow-500"></i> Finance Tracker</button>
             <button onclick="openFeature('focus')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-stopwatch w-6 text-purple-500"></i> Focus Space</button>
             <button onclick="openFeature('settings')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-gear w-6 text-gray-500"></i> Settings</button>
         </nav>
@@ -174,7 +159,6 @@
     <!-- Main Content -->
     <main class="p-4 md:p-6 pb-20 relative" id="main-content">
         
-        <!-- Greeting -->
         <div class="flex justify-between items-end mb-6">
             <div>
                 <h2 id="greeting-text" class="text-3xl font-bold mb-1">Chào bạn! ☀️</h2>
@@ -198,9 +182,8 @@
                 <!-- Weekly Schedule -->
                 <div class="glass-panel rounded-3xl p-5">
                     <div class="flex justify-between items-center mb-4 px-2">
-                        <h3 class="font-bold text-lg"><i class="fa-regular fa-calendar-days text-appleBlue mr-2"></i> Lịch Trình Tuần</h3>
+                        <h3 class="font-bold text-lg"><i class="fa-regular fa-calendar-days text-primary mr-2"></i> Lịch Trình Tuần</h3>
                         <div class="flex gap-2 items-center">
-                            <button onclick="exportICS('week')" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-green-100 hover:text-green-600 transition" title="Xuất lịch tuần"><i class="fa-solid fa-download text-xs"></i></button>
                             <button onclick="changeWeek(-1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
                             <span id="week-label" class="text-sm font-medium px-2 py-1.5">Tuần này</span>
                             <button onclick="changeWeek(1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
@@ -213,28 +196,21 @@
 
                 <!-- Widgets Row -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <!-- Health Widget -->
                     <div class="glass-panel rounded-3xl p-5 flex flex-col hover-lift cursor-pointer" onclick="openFeature('health')">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-bold"><i class="fa-solid fa-heart-pulse text-red-500 mr-2"></i> Sức Khỏe</h3>
                             <i class="fa-solid fa-arrow-up-right-from-square text-gray-400 text-xs"></i>
                         </div>
-                        <div id="dashboard-health-widget" class="space-y-3 flex-1 overflow-y-auto custom-scrollbar max-h-40">
-                            <!-- Injected -->
-                        </div>
+                        <div id="dashboard-health-widget" class="space-y-3 flex-1 overflow-y-auto custom-scrollbar max-h-40"></div>
                     </div>
 
-                    <!-- Reading Widget -->
                     <div class="glass-panel rounded-3xl p-5 flex flex-col hover-lift relative overflow-hidden cursor-pointer" onclick="openFeature('reading')">
                         <div class="flex justify-between items-center mb-4 relative z-10">
                             <h3 class="font-bold"><i class="fa-solid fa-book-open text-emerald-500 mr-2"></i> Đang Đọc</h3>
                         </div>
-                        <div class="flex gap-4 relative z-10" id="dashboard-reading-widget">
-                            <!-- Injected -->
-                        </div>
+                        <div class="flex gap-4 relative z-10" id="dashboard-reading-widget"></div>
                     </div>
 
-                    <!-- Spiritual Widget -->
                     <div class="glass-panel rounded-3xl p-5 flex flex-col hover-lift">
                         <h3 class="font-bold mb-4"><i class="fa-solid fa-hands-praying text-purple-500 mr-2"></i> Tâm Linh</h3>
                         <div class="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-900/30 h-full flex flex-col justify-center">
@@ -261,13 +237,13 @@
 
             <!-- Right Column (Pomodoro Summary) -->
             <div class="xl:col-span-3 flex flex-col gap-5">
-                <div class="glass-panel rounded-3xl p-6 flex flex-col items-center relative overflow-hidden bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border-indigo-200/50 dark:border-indigo-500/30">
+                <div class="glass-panel rounded-3xl p-6 flex flex-col items-center relative overflow-hidden bg-indigo-50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-900/30">
                     <h3 class="font-bold text-lg mb-1 absolute top-6 left-6"><i class="fa-solid fa-stopwatch text-indigo-500 mr-2"></i> Focus</h3>
-                    <button onclick="openFeature('focus')" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/50 dark:bg-gray-800/50 flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition hover:scale-110"><i class="fa-solid fa-expand text-indigo-500 text-xs"></i></button>
+                    <button onclick="openFeature('focus')" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-expand text-indigo-500 text-xs"></i></button>
                     
                     <div class="relative w-40 h-40 mt-8 flex items-center justify-center cursor-pointer" onclick="openFeature('focus')">
                         <svg class="w-full h-full transform -rotate-90">
-                            <circle cx="80" cy="80" r="72" stroke="currentColor" stroke-width="8" fill="transparent" class="text-indigo-200/50 dark:text-indigo-900/50"></circle>
+                            <circle cx="80" cy="80" r="72" stroke="currentColor" stroke-width="8" fill="transparent" class="text-indigo-200 dark:text-indigo-900/50"></circle>
                             <circle id="mini-pomo-ring" cx="80" cy="80" r="72" stroke="currentColor" stroke-width="8" fill="transparent" stroke-dasharray="452" stroke-dashoffset="0" class="progress-ring__circle text-indigo-500"></circle>
                         </svg>
                         <div class="absolute flex flex-col items-center">
@@ -280,8 +256,8 @@
                     <p class="text-[10px] text-gray-500 mb-4">Hoàn thành để cây lớn lên!</p>
                     
                     <div class="flex gap-3 z-10">
-                        <button onclick="togglePomo()" id="mini-pomo-btn" class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:scale-110 transition"><i class="fa-solid fa-play text-sm ml-1"></i></button>
-                        <button onclick="resetPomo()" class="w-10 h-10 rounded-full bg-white/50 dark:bg-gray-800/50 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-white dark:hover:bg-gray-700 transition hover:scale-110"><i class="fa-solid fa-rotate-right"></i></button>
+                        <button onclick="togglePomo()" id="mini-pomo-btn" class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:scale-105 transition"><i class="fa-solid fa-play text-sm ml-1"></i></button>
+                        <button onclick="resetPomo()" class="w-10 h-10 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:scale-105 transition"><i class="fa-solid fa-rotate-right"></i></button>
                     </div>
                 </div>
 
@@ -300,16 +276,15 @@
         <div class="modal-content glass-panel w-full max-w-5xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('daily-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             <div class="flex items-center gap-4 mb-6 shrink-0">
-                <input type="date" id="daily-date-picker" onchange="renderDailyView(this.value)" class="p-2 text-xl font-bold bg-transparent border-b-2 border-appleBlue outline-none dark:text-white">
+                <input type="date" id="daily-date-picker" onchange="renderDailyView(this.value)" class="p-2 text-xl font-bold bg-transparent border-b-2 border-primary outline-none dark:text-white">
                 <h2 class="text-2xl font-bold hidden sm:block">Daily Planner</h2>
-                <button onclick="exportICS('day')" class="ml-auto mr-12 text-sm font-medium text-gray-500 hover:text-appleBlue flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-lg transition"><i class="fa-solid fa-download"></i> Export</button>
             </div>
             
             <div class="flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
                 <div class="w-full md:w-1/2 flex flex-col overflow-hidden bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20 shadow-sm">
                     <div class="flex justify-between items-center mb-3 shrink-0">
-                        <h3 class="font-bold text-lg"><i class="fa-solid fa-list-check text-appleBlue mr-2"></i> Nhiệm Vụ</h3>
-                        <button onclick="openTaskModal(document.getElementById('daily-date-picker').value)" class="text-sm bg-appleBlue text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition hover:scale-105">+ Task</button>
+                        <h3 class="font-bold text-lg"><i class="fa-solid fa-list-check text-primary mr-2"></i> Nhiệm Vụ</h3>
+                        <button onclick="openTaskModal(document.getElementById('daily-date-picker').value)" class="text-sm bg-primary text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition">+ Task</button>
                     </div>
                     <div id="daily-task-list" class="space-y-2 overflow-y-auto custom-scrollbar pr-2 flex-1"></div>
                 </div>
@@ -317,11 +292,9 @@
                 <div class="w-full md:w-1/2 flex flex-col overflow-hidden bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20 shadow-sm">
                     <div class="flex justify-between items-center mb-3 shrink-0">
                         <h3 class="font-bold text-lg"><i class="fa-solid fa-clock text-emerald-500 mr-2"></i> Timeline</h3>
-                        <button onclick="openTimeBlockModal()" class="text-sm bg-emerald-500 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition hover:scale-105">+ Block</button>
+                        <button onclick="openTimeBlockModal()" class="text-sm bg-emerald-500 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition">+ Block</button>
                     </div>
-                    <div id="timeline-container" class="overflow-y-auto custom-scrollbar flex-1 relative pr-2">
-                        <!-- 24h timeline injected here -->
-                    </div>
+                    <div id="timeline-container" class="overflow-y-auto custom-scrollbar flex-1 relative pr-2"></div>
                 </div>
             </div>
         </div>
@@ -333,37 +306,14 @@
             <button onclick="closeModal('habit-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             <div class="flex justify-between items-center mb-2 shrink-0">
                 <h2 class="text-2xl font-bold"><i class="fa-solid fa-list-check text-purple-500 mr-2"></i> Habit Tracker</h2>
-                <button onclick="openModal('habit-add-modal')" class="bg-purple-500 text-white px-4 py-2 rounded-xl text-sm shadow-lg hover:bg-purple-600 transition hover:scale-105 mr-10">+ Tạo Habit</button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 shrink-0">
-                <div class="md:col-span-2 bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
-                    <h4 class="text-sm font-bold text-gray-500 mb-2">Tiến Độ Tháng</h4>
-                    <div class="h-24 w-full"><canvas id="habitMonthlyChart"></canvas></div>
-                </div>
-                <div class="bg-purple-50/50 dark:bg-purple-900/10 rounded-2xl p-4 border border-purple-100 dark:border-purple-900/30 flex items-center justify-around">
-                    <div class="text-center">
-                        <div class="relative w-16 h-16">
-                            <svg class="w-full h-full transform -rotate-90"><circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" class="text-purple-200 dark:text-purple-900"></circle><circle id="habit-month-ring" cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" stroke-dasharray="176" stroke-dashoffset="176" class="progress-ring__circle text-purple-500"></circle></svg>
-                            <span id="habit-month-percent" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-purple-600">0%</span>
-                        </div>
-                        <p class="text-[10px] text-gray-500 mt-1">Tháng</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="relative w-16 h-16">
-                            <svg class="w-full h-full transform -rotate-90"><circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" class="text-blue-200 dark:text-blue-900"></circle><circle id="habit-week-ring" cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" stroke-dasharray="176" stroke-dashoffset="176" class="progress-ring__circle text-blue-500"></circle></svg>
-                            <span id="habit-week-percent" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-blue-600">0%</span>
-                        </div>
-                        <p class="text-[10px] text-gray-500 mt-1">Tuần</p>
-                    </div>
-                </div>
+                <button onclick="openModal('habit-add-modal')" class="bg-purple-500 text-white px-4 py-2 rounded-xl text-sm shadow-lg hover:bg-purple-600 transition mr-10">+ Tạo Habit</button>
             </div>
 
             <div class="flex-1 overflow-x-auto custom-scrollbar bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
                 <table class="w-full text-left border-collapse min-w-[800px]">
                     <thead>
                         <tr class="border-b border-gray-200 dark:border-gray-700">
-                            <th class="p-2 min-w-[150px] text-sm text-gray-500 sticky left-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur">Thói quen</th>
+                            <th class="p-2 min-w-[180px] text-sm text-gray-500 sticky left-0 bg-white dark:bg-[#1a1a1a] z-10">Thói quen</th>
                             <script>for(let i=1; i<=31; i++) document.write(`<th class="w-6 p-1 text-center text-[10px] text-gray-400">${i}</th>`);</script>
                         </tr>
                     </thead>
@@ -400,13 +350,9 @@
     <div id="reading-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('reading-modal')">
         <div class="modal-content glass-panel w-full max-w-5xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('reading-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            
             <div class="flex justify-between items-center mb-4 shrink-0 pr-10">
                 <h2 class="text-2xl font-bold"><i class="fa-solid fa-book-open text-emerald-500 mr-2"></i> Thư Viện Sách</h2>
-                <div class="flex gap-2">
-                    <button onclick="openModal('add-link-modal')" class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-appleBlue bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-link mr-1"></i> Link</button>
-                    <button onclick="openModal('add-book-modal')" class="text-sm bg-appleBlue text-white px-3 py-1.5 rounded-lg hover:bg-blue-600 transition shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Sách</button>
-                </div>
+                <button onclick="openModal('add-book-modal')" class="text-sm bg-primary text-white px-3 py-1.5 rounded-lg transition shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Sách</button>
             </div>
             
             <div class="flex flex-col lg:flex-row gap-6 overflow-y-auto custom-scrollbar flex-1 pr-2">
@@ -423,7 +369,6 @@
                             </div>
                         </div>
                         <p class="text-xs text-gray-600 dark:text-gray-400">Đã đọc: <span id="reading-done-count" class="font-bold text-emerald-600">0</span> / <span id="reading-goal-target" class="font-bold">12</span> cuốn</p>
-                        <button onclick="editReadingGoal()" class="text-[10px] text-appleBlue mt-2 hover:underline">Chỉnh sửa mục tiêu</button>
                     </div>
                 </div>
 
@@ -439,9 +384,7 @@
                         <div class="bg-white/50 dark:bg-gray-800/50 rounded-3xl p-5 border border-white/20">
                             <div class="flex justify-between items-center mb-3">
                                 <h3 class="font-bold text-sm text-gray-500">Đã đọc xong</h3>
-                                <select id="reading-year-filter" onchange="renderReadingView()" class="text-xs font-bold text-appleBlue bg-transparent outline-none cursor-pointer border border-gray-200 dark:border-gray-700 rounded p-1">
-                                    <!-- Năm sẽ được thêm vào đây -->
-                                </select>
+                                <select id="reading-year-filter" onchange="renderReadingView()" class="text-xs font-bold text-primary bg-transparent outline-none cursor-pointer border border-gray-200 dark:border-gray-700 rounded p-1"></select>
                             </div>
                             <div class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar" id="reading-list-finished"></div>
                         </div>
@@ -468,19 +411,19 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div class="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-xl border border-amber-200 dark:border-amber-800/50">
                             <p class="font-bold text-xs text-amber-600 mb-2">Bữa Sáng</p>
-                            <textarea id="meal-breakfast" onchange="saveMeal('breakfast', this.value)" class="w-full bg-transparent border-none outline-none text-sm resize-none h-16 placeholder-gray-400" placeholder="Nhập món ăn..."></textarea>
+                            <textarea id="meal-breakfast" onchange="saveMeal('breakfast', this.value)" class="w-full bg-transparent border-none outline-none text-sm resize-none h-16 placeholder-gray-400" placeholder="..."></textarea>
                         </div>
                         <div class="bg-emerald-50 dark:bg-emerald-900/10 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
                             <p class="font-bold text-xs text-emerald-600 mb-2">Bữa Trưa</p>
-                            <textarea id="meal-lunch" onchange="saveMeal('lunch', this.value)" class="w-full bg-transparent border-none outline-none text-sm resize-none h-16 placeholder-gray-400" placeholder="Nhập món ăn..."></textarea>
+                            <textarea id="meal-lunch" onchange="saveMeal('lunch', this.value)" class="w-full bg-transparent border-none outline-none text-sm resize-none h-16 placeholder-gray-400" placeholder="..."></textarea>
                         </div>
                         <div class="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-200 dark:border-blue-800/50">
                             <p class="font-bold text-xs text-blue-600 mb-2">Bữa Tối</p>
-                            <textarea id="meal-dinner" onchange="saveMeal('dinner', this.value)" class="w-full bg-transparent border-none outline-none text-sm resize-none h-16 placeholder-gray-400" placeholder="Nhập món ăn..."></textarea>
+                            <textarea id="meal-dinner" onchange="saveMeal('dinner', this.value)" class="w-full bg-transparent border-none outline-none text-sm resize-none h-16 placeholder-gray-400" placeholder="..."></textarea>
                         </div>
                         <div class="bg-purple-50 dark:bg-purple-900/10 p-3 rounded-xl border border-purple-200 dark:border-purple-800/50">
                             <p class="font-bold text-xs text-purple-600 mb-2">Bữa Phụ</p>
-                            <textarea id="meal-snack" onchange="saveMeal('snack', this.value)" class="w-full bg-transparent border-none outline-none text-sm resize-none h-16 placeholder-gray-400" placeholder="Nhập món ăn..."></textarea>
+                            <textarea id="meal-snack" onchange="saveMeal('snack', this.value)" class="w-full bg-transparent border-none outline-none text-sm resize-none h-16 placeholder-gray-400" placeholder="..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -492,11 +435,11 @@
                         <div class="flex gap-2">
                             <input type="number" id="health-goal" required placeholder="Mục tiêu" class="w-20 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 outline-none text-sm">
                             <input type="text" id="health-unit" required placeholder="Đơn vị" class="w-20 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 outline-none text-sm">
-                            <input type="number" id="health-step" required placeholder="Bước nhảy" value="1" class="w-20 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 outline-none text-sm" title="Mỗi lần cộng là bao nhiêu?">
+                            <input type="number" id="health-step" required placeholder="Bước" value="1" class="w-16 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 outline-none text-sm" title="Mỗi lần cộng là bao nhiêu?">
                         </div>
                         <div class="flex items-center gap-2">
                             <input type="color" id="health-color" value="#ef4444" class="h-9 w-10 p-1 rounded-lg border border-gray-300 cursor-pointer">
-                            <button type="submit" class="bg-appleBlue text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition h-9 whitespace-nowrap">Thêm</button>
+                            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg text-sm transition h-9 whitespace-nowrap hover:opacity-90">Thêm</button>
                         </div>
                     </form>
                 </div>
@@ -504,65 +447,46 @@
         </div>
     </div>
 
-    <!-- Finance Tracker Modal -->
-    <div id="finance-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('finance-modal')">
-        <div class="modal-content glass-panel w-full max-w-5xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
-            <button onclick="closeModal('finance-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            <h2 class="text-2xl font-bold mb-6 shrink-0"><i class="fa-solid fa-wallet text-yellow-500 mr-2"></i> Quản Lý Tài Chính</h2>
+    <!-- Focus Modal (Pomodoro) -->
+    <div id="focus-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('focus-modal')">
+        <div class="modal-content glass-panel w-full max-w-4xl h-auto max-h-[90vh] rounded-3xl p-8 relative flex flex-col items-center justify-center overflow-y-auto">
+            <button onclick="closeModal('focus-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             
-            <div class="overflow-y-auto custom-scrollbar flex-1 space-y-6 pr-2">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-gradient-to-br from-green-400 to-emerald-600 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                        <i class="fa-solid fa-sack-dollar absolute -bottom-2 -right-2 text-6xl opacity-20"></i>
-                        <p class="text-xs font-semibold opacity-90 mb-1">Số dư hiện tại</p>
-                        <p class="text-3xl font-extrabold" id="fin-balance">0 đ</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-blue-400 to-indigo-600 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                        <i class="fa-solid fa-piggy-bank absolute -bottom-2 -right-2 text-6xl opacity-20"></i>
-                        <p class="text-xs font-semibold opacity-90 mb-1">Tiết kiệm</p>
-                        <p class="text-3xl font-extrabold" id="fin-savings">0 đ</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-rose-400 to-red-600 text-white p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                        <i class="fa-solid fa-cart-shopping absolute -bottom-2 -right-2 text-6xl opacity-20"></i>
-                        <p class="text-xs font-semibold opacity-90 mb-1">Đã tiêu tháng này</p>
-                        <p class="text-3xl font-extrabold" id="fin-spent">0 đ</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
-                        <h3 class="font-bold text-sm mb-4">Chi tiêu theo danh mục</h3>
-                        <div class="h-64 w-full relative flex justify-center">
-                            <canvas id="financeChart"></canvas>
-                        </div>
-                    </div>
+            <h2 class="text-2xl font-bold mb-6 text-indigo-500"><i class="fa-solid fa-stopwatch mr-2"></i> Focus Space</h2>
+            
+            <div class="flex gap-2 mb-8">
+                <button onclick="setPomoPreset(25,5)" class="px-4 py-1.5 text-xs font-bold rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-indigo-500 hover:text-white transition">25/5</button>
+                <button onclick="setPomoPreset(50,10)" class="px-4 py-1.5 text-xs font-bold rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-indigo-500 hover:text-white transition">50/10</button>
+            </div>
+            
+            <div class="relative w-72 h-72 flex items-center justify-center mb-6">
+                <svg class="w-full h-full transform -rotate-90">
+                    <circle cx="144" cy="144" r="128" stroke="currentColor" stroke-width="12" fill="transparent" class="text-gray-200 dark:text-gray-700"></circle>
+                    <circle id="main-pomo-ring" cx="144" cy="144" r="128" stroke="currentColor" stroke-width="12" fill="transparent" stroke-dasharray="804" stroke-dashoffset="0" class="progress-ring__circle text-indigo-500"></circle>
+                </svg>
+                <div class="absolute flex flex-col items-center">
+                    <div id="pomo-attached-task" class="hidden absolute -top-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap shadow-sm border border-indigo-200 dark:border-indigo-700"></div>
                     
-                    <div class="space-y-4">
-                        <div class="bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
-                            <h3 class="font-bold text-sm mb-3">Thêm chi tiêu</h3>
-                            <form onsubmit="addTransaction(event)" class="space-y-3">
-                                <div class="flex gap-2">
-                                    <input type="text" id="trans-name" required placeholder="Tên món đồ..." class="flex-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-900 border-none outline-none text-sm">
-                                    <input type="number" id="trans-amount" required placeholder="Số tiền" class="w-28 p-2 rounded-lg bg-gray-100 dark:bg-gray-900 border-none outline-none text-sm">
-                                </div>
-                                <div class="flex gap-2">
-                                    <select id="trans-tag" class="flex-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-900 border-none outline-none text-sm">
-                                        <option value="Ăn uống">Ăn uống</option>
-                                        <option value="Mua sắm">Mua sắm</option>
-                                        <option value="Học tập">Học tập</option>
-                                        <option value="Di chuyển">Di chuyển</option>
-                                        <option value="Khác">Khác</option>
-                                    </select>
-                                    <button type="submit" class="bg-appleBlue text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition">Thêm</button>
-                                </div>
-                            </form>
-                        </div>
+                    <span id="main-timer-display" class="text-6xl font-extrabold tracking-tight">25:00</span>
+                    <span id="pomo-state" class="text-sm text-gray-500 mt-2 uppercase tracking-widest font-semibold">Deep Work</span>
+                </div>
+            </div>
 
-                        <div class="bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20 flex-1">
-                            <h3 class="font-bold text-sm mb-3">Wishlist</h3>
-                            <div id="wishlist-container" class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar"></div>
-                        </div>
-                    </div>
+            <div class="text-5xl mb-8" id="main-tree">🌱</div>
+
+            <div class="w-full max-w-sm mb-8 relative">
+                <label class="text-xs font-semibold text-gray-500 mb-1 block">Gắn với Task</label>
+                <select id="pomo-task-select" onchange="updateAttachedTaskDisplay()" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm border border-gray-200 dark:border-gray-700 outline-none shadow-sm cursor-pointer">
+                    <option value="">-- Không chọn --</option>
+                </select>
+            </div>
+
+            <div class="flex gap-6 items-center">
+                <button onclick="togglePomo()" id="main-pomo-btn" class="w-16 h-16 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:scale-105 transition"><i class="fa-solid fa-play text-2xl ml-1"></i></button>
+                <button onclick="resetPomo()" class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-gray-300 transition"><i class="fa-solid fa-rotate-right text-lg"></i></button>
+                
+                <div class="flex flex-col gap-1 border-l border-gray-300 dark:border-gray-600 pl-6">
+                    <button id="pomo-action-btn" onclick="handlePomoAction()" class="text-sm font-bold text-green-600 hover:underline">Mark as Done</button>
                 </div>
             </div>
         </div>
@@ -572,21 +496,27 @@
     <div id="profile-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('profile-modal')">
         <div class="modal-content glass-panel w-full max-w-3xl h-[85vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('profile-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            <h2 class="text-2xl font-bold mb-6 shrink-0"><i class="fa-solid fa-user-circle text-appleBlue mr-2"></i> Không Gian Cá Nhân</h2>
+            <h2 class="text-2xl font-bold mb-6 shrink-0"><i class="fa-solid fa-user-circle text-primary mr-2"></i> Không Gian Cá Nhân</h2>
             
             <div class="overflow-y-auto custom-scrollbar flex-1 pr-2">
                 <form onsubmit="saveProfile(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2 flex items-center gap-4 mb-2">
-                        <img src="https://i.pravatar.cc/150?img=47" class="w-20 h-20 rounded-full border-4 border-white dark:border-gray-600 shadow-lg">
+                        <div class="relative">
+                            <img id="prof-avatar-img" src="https://i.pravatar.cc/150?img=47" class="w-20 h-20 rounded-full border-4 border-white dark:border-gray-600 shadow-lg object-cover">
+                            <label class="absolute bottom-0 right-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition shadow-md" title="Đổi ảnh">
+                                <i class="fa-solid fa-camera text-xs"></i>
+                                <input type="file" id="prof-avatar-input" accept="image/*" class="hidden" onchange="uploadAvatar(event)">
+                            </label>
+                        </div>
                         <div>
                             <p class="font-bold text-lg">Ảnh đại diện</p>
-                            <p class="text-xs text-gray-500">(Mặc định)</p>
+                            <p class="text-xs text-gray-500">Bấm vào icon camera để thay đổi</p>
                         </div>
                     </div>
                     
                     <div>
                         <label class="text-xs font-bold text-gray-500">Họ và Tên</label>
-                        <input type="text" id="prof-name" class="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg outline-none border border-gray-200 dark:border-gray-700" value="Minh">
+                        <input type="text" id="prof-name" class="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg outline-none border border-gray-200 dark:border-gray-700">
                     </div>
                     <div>
                         <label class="text-xs font-bold text-gray-500">Ngày sinh</label>
@@ -601,8 +531,13 @@
                         <input type="text" id="prof-edu" class="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg outline-none border border-gray-200 dark:border-gray-700" placeholder="VD: ĐH Bách Khoa">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="text-xs font-bold text-gray-500">Nơi ở hiện tại</label>
-                        <input type="text" id="prof-location" class="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg outline-none border border-gray-200 dark:border-gray-700" placeholder="VD: Hà Nội, Việt Nam">
+                        <label class="text-xs font-bold text-gray-500">Sở thích (Cách nhau bởi dấu phẩy)</label>
+                        <input type="text" id="prof-hobbies" class="w-full mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg outline-none border border-gray-200 dark:border-gray-700" placeholder="Đọc sách, Code, Chơi game...">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-xs font-bold text-gray-500">Mạng xã hội (Facebook, Insta, Github...)</label>
+                        <div id="social-links-container" class="space-y-2 mb-2"></div>
+                        <button type="button" onclick="addSocialLink()" class="text-xs text-primary hover:underline">+ Thêm mạng xã hội</button>
                     </div>
                     <div class="md:col-span-2">
                         <label class="text-xs font-bold text-gray-500">Tiểu sử / Giới thiệu</label>
@@ -610,114 +545,47 @@
                     </div>
                     
                     <div class="md:col-span-2 mt-4">
-                        <button type="submit" class="w-full bg-appleBlue text-white py-2.5 rounded-xl font-bold hover:bg-blue-600 transition">Lưu Thông Tin</button>
+                        <button type="submit" class="w-full bg-primary text-white py-2.5 rounded-xl font-bold transition hover:opacity-90">Lưu Thông Tin</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- App Grid Modal -->
-    <div id="appgrid-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('appgrid-modal')">
-        <div class="modal-content glass-panel w-full max-w-3xl h-[80vh] rounded-3xl p-6 relative flex flex-col">
-            <button onclick="closeModal('appgrid-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            <div class="flex justify-between items-center mb-6 shrink-0">
-                <h2 class="text-2xl font-bold"><i class="fa-solid fa-border-all text-indigo-500 mr-2"></i> App Grid</h2>
-                <button onclick="openModal('add-app-modal')" class="text-sm bg-indigo-500 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-600 transition shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Thêm</button>
-            </div>
-            
-            <div class="overflow-y-auto custom-scrollbar flex-1 pr-2">
-                <div class="app-grid" id="app-grid-container"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Focus Modal -->
-    <div id="focus-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('focus-modal')">
-        <div class="modal-content glass-panel w-full max-w-5xl h-[85vh] rounded-3xl p-6 relative flex flex-col md:flex-row gap-6 overflow-y-auto">
-            <button onclick="closeModal('focus-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            
-            <div class="flex-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 pb-6 md:pb-0 md:pr-6">
-                <div class="flex gap-2 mb-6" id="pomo-presets">
-                    <button onclick="setPomoPreset(25,5)" class="px-4 py-1.5 text-xs font-bold rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-indigo-500 hover:text-white transition">25/5</button>
-                    <button onclick="setPomoPreset(50,10)" class="px-4 py-1.5 text-xs font-bold rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-indigo-500 hover:text-white transition">50/10</button>
-                </div>
-                
-                <div class="relative w-64 h-64 flex items-center justify-center mb-4">
-                    <svg class="w-full h-full transform -rotate-90">
-                        <circle cx="128" cy="128" r="112" stroke="currentColor" stroke-width="12" fill="transparent" class="text-gray-200 dark:text-gray-700"></circle>
-                        <circle id="main-pomo-ring" cx="128" cy="128" r="112" stroke="currentColor" stroke-width="12" fill="transparent" stroke-dasharray="703" stroke-dashoffset="0" class="progress-ring__circle text-indigo-500"></circle>
-                    </svg>
-                    <div class="absolute flex flex-col items-center">
-                        <div id="pomo-attached-task" class="hidden absolute -top-10 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap shadow-sm border border-indigo-200 dark:border-indigo-700"></div>
-                        
-                        <span id="main-timer-display" class="text-5xl font-extrabold tracking-tight">25:00</span>
-                        <span id="pomo-state" class="text-xs text-gray-500 mt-2 uppercase tracking-widest font-semibold">Deep Work</span>
-                    </div>
-                </div>
-
-                <div class="text-4xl mb-6" id="main-tree">🌱</div>
-
-                <div class="w-full max-w-xs mb-6 relative">
-                    <label class="text-xs font-semibold text-gray-500 mb-1 block">Gắn với Task</label>
-                    <select id="pomo-task-select" onchange="updateAttachedTaskDisplay()" class="w-full p-2.5 rounded-xl bg-white dark:bg-gray-800 text-sm border border-gray-200 dark:border-gray-700 outline-none shadow-sm cursor-pointer hover:border-indigo-300 transition">
-                        <option value="">-- Không chọn --</option>
-                    </select>
-                </div>
-
-                <div class="flex gap-4 items-center">
-                    <button onclick="togglePomo()" id="main-pomo-btn" class="w-14 h-14 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:scale-110 transition"><i class="fa-solid fa-play text-xl ml-1"></i></button>
-                    <button onclick="resetPomo()" class="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-gray-300 transition hover:scale-110"><i class="fa-solid fa-rotate-right"></i></button>
-                    
-                    <div class="flex flex-col gap-1 ml-4 border-l border-gray-300 dark:border-gray-600 pl-4">
-                        <button id="pomo-action-btn" onclick="handlePomoAction()" class="text-sm font-bold text-green-600 hover:underline">Mark as Done</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex-1 flex flex-col justify-between md:pl-2">
-                <div class="mb-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-bold text-sm text-gray-500 uppercase">Không Gian Làm Việc</h3>
-                        <button onclick="openModal('add-link-modal')" class="text-[10px] text-appleBlue hover:underline">+ Thêm Link</button>
-                    </div>
-                    <div id="focus-links-container" class="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto custom-scrollbar"></div>
-                </div>
-
-                <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-200 dark:border-gray-700">
-                    <h3 class="font-bold text-sm mb-2 text-gray-600 dark:text-gray-300">Thống Kê Tuần</h3>
-                    <div class="h-32 w-full">
-                        <canvas id="focusChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
+    <!-- Settings Modal (Đã lược bớt) -->
     <div id="settings-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('settings-modal')">
         <div class="modal-content glass-panel w-full max-w-4xl h-[80vh] rounded-3xl p-0 flex flex-col md:flex-row overflow-hidden relative">
             <button onclick="closeModal('settings-modal')" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             
             <div class="w-full md:w-56 bg-gray-50/80 dark:bg-gray-900/80 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col gap-2 overflow-x-auto shrink-0">
                 <h2 class="text-lg font-bold mb-2 hidden md:block px-2">Settings</h2>
-                <button onclick="switchSettingsTab('appearance')" id="set-tab-appearance" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition active">Appearance</button>
-                <button onclick="switchSettingsTab('shortcuts')" id="set-tab-shortcuts" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">Shortcuts</button>
+                <button onclick="switchSettingsTab('appearance')" id="set-tab-appearance" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition active font-bold text-primary">Appearance</button>
+                <button onclick="switchSettingsTab('tags')" id="set-tab-tags" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">Tags</button>
             </div>
             
             <div class="flex-1 p-6 md:p-8 overflow-y-auto">
                 <div id="settings-content-appearance" class="settings-tab">
                     <h3 class="text-lg font-bold mb-4">Giao Diện</h3>
-                    <div class="flex gap-4">
-                        <button onclick="setTheme('light')" class="flex-1 py-4 border-2 rounded-xl flex flex-col items-center gap-2 hover:border-appleBlue transition" id="theme-btn-light"><i class="fa-solid fa-sun text-2xl text-amber-500"></i> <span class="text-sm font-semibold">Sáng</span></button>
-                        <button onclick="setTheme('dark')" class="flex-1 py-4 border-2 rounded-xl flex flex-col items-center gap-2 hover:border-appleBlue transition" id="theme-btn-dark"><i class="fa-solid fa-moon text-2xl text-indigo-500"></i> <span class="text-sm font-semibold">Tối</span></button>
+                    <div class="flex gap-4 mb-6">
+                        <button onclick="setTheme('light')" class="flex-1 py-4 border-2 rounded-xl flex flex-col items-center gap-2 hover:border-primary transition" id="theme-btn-light"><i class="fa-solid fa-sun text-2xl text-amber-500"></i> <span class="text-sm font-semibold">Sáng</span></button>
+                        <button onclick="setTheme('dark')" class="flex-1 py-4 border-2 rounded-xl flex flex-col items-center gap-2 hover:border-primary transition" id="theme-btn-dark"><i class="fa-solid fa-moon text-2xl text-indigo-500"></i> <span class="text-sm font-semibold">Tối</span></button>
                     </div>
                 </div>
 
-                <div id="settings-content-shortcuts" class="settings-tab hidden">
-                    <h3 class="text-lg font-bold mb-4">Phím Tắt</h3>
-                    <div id="shortcuts-list" class="space-y-2 mb-6"></div>
-                    <p class="text-xs text-gray-500">*Nhấn vào ô phím tắt và bấm tổ hợp phím mới.</p>
+                <div id="settings-content-tags" class="settings-tab hidden">
+                    <h3 class="text-lg font-bold mb-4">Quản Lý Tags</h3>
+                    <div id="settings-tags-list" class="space-y-2 mb-6 max-h-64 overflow-y-auto custom-scrollbar"></div>
+                    <form onsubmit="handleAddTag(event)" class="flex gap-3 items-end bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold mb-1 block">Tên Tag</label>
+                            <input type="text" id="new-tag-name" required class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold mb-1 block">Màu</label>
+                            <input type="color" id="new-tag-color" value="#007AFF" class="h-10 w-12 p-1 rounded-lg border border-gray-300 cursor-pointer">
+                        </div>
+                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg text-sm transition h-10 hover:opacity-90">Thêm</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -725,37 +593,94 @@
 
     <!-- ================= SMALL SUB-MODALS ================= -->
 
-    <!-- Add App Modal -->
-    <div id="add-app-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('add-app-modal')">
-        <div class="modal-content glass-panel w-full max-w-sm rounded-3xl p-6 relative">
-            <button onclick="closeModal('add-app-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-bold mb-4">Thêm App / Web</h3>
-            <form id="app-form" onsubmit="handleAddApp(event)">
+    <!-- Task Modal -->
+    <div id="task-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('task-modal')">
+        <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-6 relative">
+            <button onclick="closeModal('task-modal')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-xl font-bold mb-4">Thêm Nhiệm Vụ</h3>
+            <form id="task-form" onsubmit="handleAddTask(event)">
+                <input type="hidden" id="task-date-input">
                 <div class="space-y-3">
                     <div>
-                        <label class="text-xs font-semibold text-gray-500">Tên</label>
-                        <input type="text" id="app-name" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                        <label class="text-xs font-semibold text-gray-500">Tên nhiệm vụ</label>
+                        <input type="text" id="task-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 ring-primary">
                     </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-500">Link (URL)</label>
-                        <input type="url" id="app-url" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-500">Tải ảnh Icon lên (Tùy chọn)</label>
-                        <input type="file" id="app-image" accept="image/*" class="w-full mt-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                    </div>
-                    <div class="flex gap-2">
+                    <div class="flex gap-3">
                         <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-500">Hoặc Icon FontAwesome</label>
-                            <input type="text" id="app-icon" placeholder="fa-brands fa-facebook" class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none text-sm">
+                            <label class="text-xs font-semibold text-gray-500">Tag</label>
+                            <select id="task-tag" class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none"></select>
                         </div>
-                        <div>
-                            <label class="text-xs font-semibold text-gray-500">Màu</label>
-                            <input type="color" id="app-color" value="#3b82f6" class="h-10 w-12 p-1 rounded-lg border border-gray-300 mt-1 cursor-pointer">
+                        <div class="w-24">
+                            <label class="text-xs font-semibold text-gray-500">Pomodoros</label>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-red-500 text-lg">🍅</span>
+                                <input type="number" id="task-pomo" min="1" max="10" value="1" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <input type="checkbox" id="task-fixed" onchange="toggleFixedTaskFields()" class="w-4 h-4 accent-primary">
+                        <label class="text-sm font-medium">Cố định (Có giờ nhắc nhở)</label>
+                    </div>
+                    <div id="fixed-task-fields" class="hidden flex gap-2 mt-2">
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold text-gray-500">Bắt đầu</label>
+                            <input type="time" id="task-start-time" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold text-gray-500">Kết thúc</label>
+                            <input type="time" id="task-end-time" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="w-full mt-6 bg-indigo-500 text-white py-2.5 rounded-xl font-medium hover:bg-indigo-600 transition">Lưu</button>
+                <button type="submit" class="w-full mt-6 bg-primary text-white py-2.5 rounded-xl font-medium transition hover:opacity-90">Lưu Task</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Timeblock Modal -->
+    <div id="timeblock-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('timeblock-modal')">
+        <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-6 relative">
+            <button onclick="closeModal('timeblock-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-xl font-bold mb-4">Thêm Time Block</h3>
+            <form id="timeblock-form" onsubmit="handleAddTimeBlock(event)">
+                <input type="hidden" id="tb-date-input">
+                <div class="space-y-3">
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold text-gray-500">Bắt đầu</label>
+                            <input type="time" id="tb-start" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold text-gray-500">Kết thúc</label>
+                            <input type="time" id="tb-end" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Tên hoạt động</label>
+                        <input type="text" id="tb-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Tag (Phân loại)</label>
+                        <select id="tb-tag" class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none"></select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full mt-6 bg-emerald-500 text-white py-2.5 rounded-xl font-medium hover:bg-emerald-600 transition">Lưu Block</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Habit Modal -->
+    <div id="habit-add-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('habit-add-modal')">
+        <div class="modal-content glass-panel w-full max-w-sm rounded-3xl p-6 relative">
+            <button onclick="closeModal('habit-add-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-xl font-bold mb-4">Tạo Thói Quen Mới</h3>
+            <form id="habit-form" onsubmit="handleAddHabit(event)">
+                <div>
+                    <label class="text-xs font-semibold text-gray-500">Tên thói quen</label>
+                    <input type="text" id="habit-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                </div>
+                <button type="submit" class="w-full mt-6 bg-purple-500 text-white py-2.5 rounded-xl font-medium hover:bg-purple-600 transition">Tạo</button>
             </form>
         </div>
     </div>
@@ -786,128 +711,8 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="w-full mt-6 bg-appleBlue text-white py-2.5 rounded-xl font-medium hover:bg-blue-600 transition">Thêm Sách</button>
+                <button type="submit" class="w-full mt-6 bg-primary text-white py-2.5 rounded-xl font-medium transition hover:opacity-90">Thêm Sách</button>
             </form>
-        </div>
-    </div>
-
-    <!-- Add Link Modal -->
-    <div id="add-link-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('add-link-modal')">
-        <div class="modal-content glass-panel w-full max-w-sm rounded-3xl p-6 relative">
-            <button onclick="closeModal('add-link-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-bold mb-4">Thêm Liên Kết</h3>
-            <form id="link-form" onsubmit="handleAddLink(event)">
-                <div class="space-y-3">
-                    <div>
-                        <label class="text-xs font-semibold text-gray-500">Tên hiển thị</label>
-                        <input type="text" id="link-name" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-500">Đường dẫn (URL)</label>
-                        <input type="url" id="link-url" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                    </div>
-                </div>
-                <button type="submit" class="w-full mt-6 bg-indigo-500 text-white py-2.5 rounded-xl font-medium hover:bg-indigo-600 transition">Thêm</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Add Habit Modal -->
-    <div id="habit-add-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('habit-add-modal')">
-        <div class="modal-content glass-panel w-full max-w-sm rounded-3xl p-6 relative">
-            <button onclick="closeModal('habit-add-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-bold mb-4">Tạo Thói Quen Mới</h3>
-            <form id="habit-form" onsubmit="handleAddHabit(event)">
-                <div>
-                    <label class="text-xs font-semibold text-gray-500">Tên thói quen</label>
-                    <input type="text" id="habit-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                </div>
-                <button type="submit" class="w-full mt-6 bg-purple-500 text-white py-2.5 rounded-xl font-medium hover:bg-purple-600 transition">Tạo</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Task Modal -->
-    <div id="task-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('task-modal')">
-        <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-6 relative">
-            <button onclick="closeModal('task-modal')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-bold mb-4">Thêm Nhiệm Vụ</h3>
-            <form id="task-form" onsubmit="handleAddTask(event)">
-                <input type="hidden" id="task-date-input">
-                <div class="space-y-3">
-                    <div>
-                        <label class="text-xs font-semibold text-gray-500">Tên nhiệm vụ</label>
-                        <input type="text" id="task-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 ring-appleBlue">
-                    </div>
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-500">Tag</label>
-                            <select id="task-tag" class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none"></select>
-                        </div>
-                        <div class="w-24">
-                            <label class="text-xs font-semibold text-gray-500">Pomodoros</label>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="text-red-500 text-lg">🍅</span>
-                                <input type="number" id="task-pomo" min="1" max="10" value="1" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 mt-2">
-                        <input type="checkbox" id="task-fixed" onchange="toggleFixedTaskFields()" class="w-4 h-4 accent-appleBlue">
-                        <label class="text-sm font-medium">Cố định (Có giờ nhắc nhở)</label>
-                    </div>
-                    <div id="fixed-task-fields" class="hidden flex gap-2 mt-2">
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-500">Bắt đầu</label>
-                            <input type="time" id="task-start-time" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-500">Kết thúc</label>
-                            <input type="time" id="task-end-time" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="w-full mt-6 bg-appleBlue text-white py-2.5 rounded-xl font-medium hover:bg-blue-600 transition">Lưu Task</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Timeblock Modal -->
-    <div id="timeblock-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('timeblock-modal')">
-        <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-6 relative">
-            <button onclick="closeModal('timeblock-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-bold mb-4">Thêm Time Block</h3>
-            <form id="timeblock-form" onsubmit="handleAddTimeBlock(event)">
-                <input type="hidden" id="tb-date-input">
-                <div class="space-y-3">
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-500">Bắt đầu</label>
-                            <input type="time" id="tb-start" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-500">Kết thúc</label>
-                            <input type="time" id="tb-end" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-500">Tên hoạt động</label>
-                        <input type="text" id="tb-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                    </div>
-                </div>
-                <button type="submit" class="w-full mt-6 bg-emerald-500 text-white py-2.5 rounded-xl font-medium hover:bg-emerald-600 transition">Lưu Block</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Spotlight Search -->
-    <div id="spotlight-modal" class="modal-overlay" style="align-items: flex-start; padding-top: 15vh;" onclick="if(event.target === this) closeModal('spotlight-modal')">
-        <div class="modal-content glass-panel w-full max-w-xl rounded-2xl p-4 relative shadow-2xl">
-            <div class="flex items-center gap-3 border-b border-gray-200 dark:border-gray-700 pb-3">
-                <i class="fa-solid fa-magnifying-glass text-gray-400 text-lg"></i>
-                <input type="text" id="spotlight-input" oninput="handleSpotlight(event)" class="w-full bg-transparent border-none outline-none text-lg placeholder-gray-400 dark:text-white" placeholder="Tìm kiếm...">
-            </div>
-            <div id="spotlight-results" class="mt-2 max-h-64 overflow-y-auto custom-scrollbar"></div>
         </div>
     </div>
 
@@ -915,7 +720,7 @@
         // --- STATE ---
         let currentWeekOffset = 0;
         let currentDailyDate = new Date().toISOString().split('T')[0];
-        let currentTheme = localStorage.getItem('auraplan_theme') || 'system';
+        let currentTheme = localStorage.getItem('auraplan_theme') || 'light';
 
         const defaultState = {
             currentUser: 'Minh',
@@ -923,7 +728,7 @@
                 'Minh': {
                     streak: 12, bestStreak: 15,
                     lastLoginDate: new Date().toISOString().split('T')[0],
-                    loginHistory: [],
+                    loginHistory: ['2023-10-20', '2023-10-21', '2023-10-22', '2023-10-23', '2023-10-24', '2023-10-25'],
                     tasks: {}, 
                     timeBlocks: {},
                     tags: { 'Work': { color: '#3b82f6' }, 'Study': { color: '#10b981' }, 'Personal': { color: '#f59e0b' }, 'Health': { color: '#ef4444' } },
@@ -938,26 +743,15 @@
                         'Đọc sách 30p': { color: '#10b981', history: {} }
                     },
                     health: [
-                        { id: 'h1', name: 'Nước uống', goal: 8, current: 3, unit: 'ly', color: '#3b82f6', icon: 'fa-droplet', showOnDash: true, step: 1 },
-                        { id: 'h3', name: 'Ánh nắng sớm', goal: 30, current: 0, unit: 'phút', color: '#f59e0b', icon: 'fa-sun', showOnDash: true, step: 10 }
+                        { id: 'h1', name: 'Nước uống', goal: 8, current: 3, unit: 'ly', color: '#3b82f6', icon: 'fa-droplet', showOnDash: true, step: 1 }
                     ],
                     meals: { breakfast: '', lunch: '', dinner: '', snack: '' },
-                    focusLinks: [{ name: 'Pomofocus', url: 'https://pomofocus.io/' }],
-                    finance: {
-                        balance: 15000000, savings: 5000000, targetSavings: 20000000,
-                        transactions: [],
-                        wishlist: []
-                    },
-                    appGrid: [
-                        { id: '1', name: 'YouTube', url: 'https://youtube.com', icon: 'fa-brands fa-youtube', color: '#ff0000' }
-                    ],
-                    profile: { name: 'Minh', dob: '2000-01-01', job: '', edu: '', location: '', bio: '' },
-                    shortcuts: { 'Space': 'togglePomo', 'KeyN': 'openTaskModal(currentDailyDate)', 'KeyF': 'openFeature("focus")' }
+                    profile: { name: 'Minh', dob: '', job: '', edu: '', location: '', bio: '', hobbies: '', socials: [], avatar: 'https://i.pravatar.cc/100?img=47' }
                 }
             }
         };
 
-        let appState = JSON.parse(localStorage.getItem('auraplan_v8')) || defaultState;
+        let appState = JSON.parse(localStorage.getItem('auraplan_v11')) || defaultState;
 
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -965,8 +759,7 @@
             checkDailyLogin();
             updateUserUI();
             renderDashboard();
-            renderShortcuts();
-            initCharts();
+            populateAllTagDropdowns();
             setupBibleVerse();
             setupDragScroll();
             
@@ -974,14 +767,72 @@
                 if(!document.getElementById('user-menu-container').contains(e.target)) closeUserMenu();
             });
             
-            document.addEventListener('keydown', handleGlobalShortcuts);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { 
+                    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); 
+                    closeSidebar(); 
+                }
+            });
         });
 
         function saveState() {
-            localStorage.setItem('auraplan_v8', JSON.stringify(appState));
+            localStorage.setItem('auraplan_v11', JSON.stringify(appState));
         }
 
-        // --- UTILS ---
+        // --- THEME ---
+        function applyTheme(t) { 
+            if(t==='dark' || (t==='system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); 
+            else document.documentElement.classList.remove('dark'); 
+        }
+        function toggleTheme() { currentTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark'; applyTheme(currentTheme); localStorage.setItem('auraplan_theme', currentTheme); setThemeButtonsUI(); }
+        function setTheme(t) { currentTheme = t; applyTheme(t); localStorage.setItem('auraplan_theme', t); setThemeButtonsUI(); }
+        function setThemeButtonsUI() {
+            ['light', 'dark'].forEach(t => {
+                const btn = document.getElementById(`theme-btn-${t}`);
+                if(btn) { if(t === currentTheme) btn.classList.add('border-primary'); else btn.classList.remove('border-primary'); }
+            });
+        }
+
+        // --- TAGS ---
+        function populateAllTagDropdowns() {
+            const tags = appState.users[appState.currentUser].tags;
+            const options = Object.keys(tags).map(t => `<option value="${t}">${t}</option>`).join('');
+            if(document.getElementById('task-tag')) document.getElementById('task-tag').innerHTML = options;
+            if(document.getElementById('tb-tag')) document.getElementById('tb-tag').innerHTML = options;
+        }
+
+        function renderSettingsTags() {
+            const list = document.getElementById('settings-tags-list');
+            const tags = appState.users[appState.currentUser].tags;
+            list.innerHTML = Object.keys(tags).map(tag => `
+                <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover-item">
+                    <div class="flex items-center gap-3">
+                        <div class="w-4 h-4 rounded-full" style="background-color: ${tags[tag].color}"></div>
+                        <span class="font-medium text-sm">${tag}</span>
+                    </div>
+                    <button onclick="deleteTag('${tag}')" class="text-red-400 hover:text-red-600 text-sm"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function handleAddTag(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-tag-name').value.trim();
+            if(name) {
+                appState.users[appState.currentUser].tags[name] = { color: document.getElementById('new-tag-color').value };
+                saveState(); renderSettingsTags(); populateAllTagDropdowns();
+                document.getElementById('new-tag-name').value = '';
+            }
+        }
+
+        function deleteTag(name) {
+            if(confirm(`Xóa tag ${name}?`)) {
+                delete appState.users[appState.currentUser].tags[name];
+                saveState(); renderSettingsTags(); populateAllTagDropdowns();
+            }
+        }
+
+        // --- CORE RENDERING ---
         function updateGreeting() {
             const hour = new Date().getHours();
             let text = hour < 12 ? 'Chào buổi sáng' : (hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối');
@@ -989,17 +840,11 @@
         }
 
         function toggleSidebar() {
-            const s = document.getElementById('sidebar');
-            const o = document.getElementById('sidebar-overlay');
+            const s = document.getElementById('sidebar'); const o = document.getElementById('sidebar-overlay');
             if(s.classList.contains('-translate-x-full')) {
-                s.classList.remove('-translate-x-full');
-                o.classList.remove('opacity-0', 'pointer-events-none');
-            } else {
-                closeSidebar();
-            }
+                s.classList.remove('-translate-x-full'); o.classList.remove('opacity-0', 'pointer-events-none');
+            } else { closeSidebar(); }
         }
-
-        // FIX Lỗi trượt menu khi mở popup
         function closeSidebar() {
             document.getElementById('sidebar').classList.add('-translate-x-full');
             document.getElementById('sidebar-overlay').classList.add('opacity-0', 'pointer-events-none');
@@ -1010,33 +855,20 @@
             if(id === 'habit-modal') renderHabits();
             if(id === 'reading-modal') renderReadingView();
             if(id === 'health-modal') renderHealthView();
-            if(id === 'finance-modal') renderFinanceView();
             if(id === 'profile-modal') renderProfile();
-            if(id === 'appgrid-modal') renderAppGrid();
             if(id === 'streak-modal') renderStreakCalendar();
-            if(id === 'settings-modal') {
-                switchSettingsTab('appearance');
-                setThemeButtonsUI();
-            }
-            if(id === 'focus-modal') updatePomodoroUI();
+            if(id === 'settings-modal') { switchSettingsTab('appearance'); setThemeButtonsUI(); }
         }
 
-        function closeModal(id) { 
-            document.getElementById(id).classList.remove('active'); 
-            // Tránh lag bằng cách xóa bớt canvas
-            if(id === 'finance-modal' && window.finChart) { window.finChart.destroy(); window.finChart = null; }
-            if(id === 'habit-modal' && window.habitChart) { window.habitChart.destroy(); window.habitChart = null; }
-        }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         function openFeature(feature) {
-            closeSidebar(); // FIX: Đóng menu ngay lập tức
+            closeSidebar();
             if(feature === 'daily') { renderDailyView(currentDailyDate); openModal('daily-modal'); }
             if(feature === 'habits') { openModal('habit-modal'); }
             if(feature === 'reading') { openModal('reading-modal'); }
             if(feature === 'health') { openModal('health-modal'); }
-            if(feature === 'finance') { openModal('finance-modal'); }
             if(feature === 'profile') { openModal('profile-modal'); }
-            if(feature === 'appgrid') { openModal('appgrid-modal'); }
             if(feature === 'streak') { openModal('streak-modal'); }
             if(feature === 'settings') { openModal('settings-modal'); }
             if(feature === 'focus') { openModal('focus-modal'); }
@@ -1044,27 +876,19 @@
 
         function switchView(view) { window.scrollTo(0,0); }
 
-        // --- DASHBOARD ---
-        function changeWeek(dir) {
-            currentWeekOffset += dir;
-            renderDashboard();
-        }
-
         function renderDashboard() {
             const container = document.getElementById('schedule-container');
             const today = new Date();
             const day = today.getDay();
             const diff = today.getDate() - day + (day === 0 ? -6 : 1);
             const startOfWeek = new Date(today.setDate(diff + (currentWeekOffset * 7)));
-            
             document.getElementById('week-label').innerText = `Tuần ${startOfWeek.getDate()}/${startOfWeek.getMonth()+1}`;
 
             const dayNames = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'];
             const dayColors = ['pink', 'teal', 'amber', 'blue', 'purple', 'rose', 'indigo'];
             const realToday = new Date().toISOString().split('T')[0];
             
-            let htmlStr = '';
-            let todayIndex = 0;
+            let htmlStr = ''; let todayIndex = 0;
 
             for (let i = 0; i < 7; i++) {
                 const d = new Date(startOfWeek);
@@ -1105,18 +929,15 @@
                                 <span class="text-[10px] font-bold text-red-500 whitespace-nowrap">🍅 ${task.pomos}</span>
                             </div>
                         </div>
-                        <button onclick="deleteTask('${dateStr}', '${task.id}')" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition mt-1"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </div>
                 `}).join('');
 
-                const isToday = dateStr === realToday;
-
                 htmlStr += `
-                    <div class="min-w-[260px] flex-1 bg-${dayColors[i]}-50/80 dark:bg-${dayColors[i]}-900/10 border border-${dayColors[i]}-100 dark:border-${dayColors[i]}-900/30 rounded-2xl p-3 flex flex-col cursor-pointer transition-all duration-300 ${isToday ? 'today-col bg-white dark:bg-gray-800' : 'hover:shadow-lg hover:-translate-y-1'}" onclick="if(!event.target.closest('input, button')) { currentDailyDate='${dateStr}'; openFeature('daily'); }">
+                    <div class="min-w-[260px] flex-1 bg-${dayColors[i]}-50/80 dark:bg-${dayColors[i]}-900/10 border border-${dayColors[i]}-100 dark:border-${dayColors[i]}-900/30 rounded-2xl p-3 flex flex-col cursor-pointer transition-all duration-150 ${dateStr === realToday ? 'today-col bg-white dark:bg-gray-800' : 'hover:shadow-md'}" onclick="if(!event.target.closest('input, button')) { currentDailyDate='${dateStr}'; openFeature('daily'); }">
                         <div class="flex justify-between items-center mb-3">
                             <div>
                                 <p class="text-xs font-bold text-${dayColors[i]}-500 uppercase">${dayNames[i]}</p>
-                                <p class="text-lg font-bold ${isToday ? 'text-appleBlue' : ''}">${d.getDate()}/${d.getMonth()+1}</p>
+                                <p class="text-lg font-bold ${dateStr === realToday ? 'text-primary' : ''}">${d.getDate()}/${d.getMonth()+1}</p>
                             </div>
                             <div class="relative w-10 h-10 flex items-center justify-center">
                                 <svg class="w-10 h-10 transform -rotate-90">
@@ -1133,127 +954,68 @@
                     </div>
                 `;
             }
-            
             container.innerHTML = htmlStr;
-
-            setTimeout(() => {
-                const cards = container.children;
-                if(cards[todayIndex]) cards[todayIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }, 100);
+            
+            // Scroll to today without smooth behavior for performance
+            setTimeout(() => { 
+                if(container.children[todayIndex]) {
+                    const card = container.children[todayIndex];
+                    container.scrollLeft = card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2;
+                }
+            }, 50);
 
             renderDashboardWidgets();
-            renderGarden();
         }
 
         function renderDashboardWidgets() {
+            // Reading
             const currentBook = appState.users[appState.currentUser].books.find(b => b.status === 'reading');
             const rw = document.getElementById('dashboard-reading-widget');
             if (currentBook) {
                 const p = Math.round((currentBook.current / currentBook.pages) * 100);
-                rw.innerHTML = `
-                    <div class="w-16 h-24 rounded-lg bg-gray-300 shadow-lg shrink-0 overflow-hidden">
-                        <img src="${currentBook.cover}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'" class="w-full h-full object-cover">
-                    </div>
-                    <div class="flex flex-col justify-between py-1 flex-1">
-                        <div>
-                            <h4 class="font-bold text-sm leading-tight mb-1 truncate">${currentBook.title}</h4>
-                            <p class="text-xs text-gray-500 truncate">${currentBook.author}</p>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-emerald-500 font-bold">${p}%</span>
-                                <span class="text-gray-500">${currentBook.current}/${currentBook.pages} tr</span>
-                            </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${p}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                rw.innerHTML = `<div class="w-16 h-24 rounded-lg bg-gray-300 shadow-lg shrink-0 overflow-hidden"><img src="${currentBook.cover}" class="w-full h-full object-cover"></div><div class="flex flex-col justify-between py-1 flex-1"><div><h4 class="font-bold text-sm leading-tight mb-1 truncate">${currentBook.title}</h4><p class="text-xs text-gray-500 truncate">${currentBook.author}</p></div><div><div class="flex justify-between text-xs mb-1"><span class="text-emerald-500 font-bold">${p}%</span><span class="text-gray-500">${currentBook.current}/${currentBook.pages} tr</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5"><div class="bg-emerald-500 h-1.5 rounded-full" style="width: ${p}%"></div></div></div></div>`;
             } else { rw.innerHTML = `<p class="text-sm text-gray-500">Chưa có sách</p>`; }
 
+            // Health
             const hw = document.getElementById('dashboard-health-widget');
-            const healthMetrics = appState.users[appState.currentUser].health.filter(h => h.showOnDash);
-            hw.innerHTML = healthMetrics.map(h => `
+            hw.innerHTML = appState.users[appState.currentUser].health.filter(h => h.showOnDash).map(h => `
                 <div class="flex items-center justify-between bg-white/50 dark:bg-gray-800/50 p-2 rounded-xl border border-white/40 hover-item">
                     <div class="flex items-center gap-2">
                         <div class="w-7 h-7 rounded-full flex items-center justify-center text-white" style="background-color: ${h.color}"><i class="fa-solid ${h.icon} text-xs"></i></div>
-                        <div>
-                            <p class="text-xs font-semibold">${h.name}</p>
-                            <p class="text-[10px] text-gray-500">${h.current}/${h.goal} ${h.unit}</p>
-                        </div>
+                        <div><p class="text-xs font-semibold">${h.name}</p><p class="text-[10px] text-gray-500">${h.current}/${h.goal} ${h.unit}</p></div>
                     </div>
                     <button onclick="event.stopPropagation(); addHealthProgress('${h.id}')" class="w-6 h-6 rounded-full flex items-center justify-center text-white hover:scale-110 transition" style="background-color: ${h.color}"><i class="fa-solid fa-plus text-[10px]"></i></button>
                 </div>
             `).join('');
 
+            // Mini Habit
             const habits = appState.users[appState.currentUser].habits;
-            const now = new Date();
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            let totalChecks = 0;
-            let totalPossible = Object.keys(habits).length * daysInMonth;
+            const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+            let totalChecks = 0, totalPossible = Object.keys(habits).length * daysInMonth;
             Object.values(habits).forEach(h => { Object.keys(h.history).forEach(d => { if(h.history[d]) totalChecks++; }); });
             const percent = totalPossible === 0 ? 0 : Math.round((totalChecks / totalPossible) * 100);
-            
             document.getElementById('mini-habit-text').innerText = `${totalChecks} hoàn thành / ${totalPossible} mục tiêu`;
             document.getElementById('mini-habit-bar').style.width = `${percent}%`;
         }
 
-        // --- DAILY PLANNER (FIXED) ---
+        // --- DAILY PLANNER & TIME BLOCK ---
         function renderDailyView(dateStr) {
             document.getElementById('daily-date-picker').value = dateStr;
             const user = appState.users[appState.currentUser];
 
-            const taskList = document.getElementById('daily-task-list');
             const tasks = user.tasks[dateStr] || [];
-            taskList.innerHTML = tasks.length ? tasks.map(t => {
+            document.getElementById('daily-task-list').innerHTML = tasks.length ? tasks.map(t => {
                 const tagColor = user.tags[t.tag]?.color || '#gray';
-                return `
-                <div class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-item">
-                    <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${dateStr}', '${t.id}')" class="w-5 h-5 accent-emerald-500">
-                    <div class="flex-1">
-                        <p class="${t.done ? 'line-through text-gray-400' : 'font-medium'}">${t.title}</p>
-                        <div class="flex gap-2 mt-1">
-                            <span class="text-[10px] px-2 py-0.5 rounded text-white" style="background-color: ${tagColor}">${t.tag}</span>
-                            <span class="text-[10px] font-bold text-red-500">🍅 x ${t.pomos}</span>
-                            ${t.isFixed ? `<span class="text-[10px] font-bold text-indigo-500"><i class="fa-regular fa-clock"></i> ${t.startTime}</span>` : ''}
-                        </div>
-                    </div>
-                    <button onclick="deleteTask('${dateStr}', '${t.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            `}).join('') : `<p class="text-sm text-gray-500 text-center py-4">Không có task nào.</p>`;
+                return `<div class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-item"><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${dateStr}', '${t.id}')" class="w-5 h-5 accent-emerald-500"><div class="flex-1"><p class="${t.done ? 'line-through text-gray-400' : 'font-medium'}">${t.title}</p><div class="flex gap-2 mt-1"><span class="text-[10px] px-2 py-0.5 rounded text-white" style="background-color: ${tagColor}">${t.tag}</span><span class="text-[10px] font-bold text-red-500">🍅 x ${t.pomos}</span>${t.isFixed ? `<span class="text-[10px] font-bold text-indigo-500"><i class="fa-regular fa-clock"></i> ${t.startTime}</span>` : ''}</div></div><button onclick="deleteTask('${dateStr}', '${t.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></div>`;
+            }).join('') : `<p class="text-sm text-gray-500 text-center py-4">Không có task nào.</p>`;
 
-            // Build 24h Timeline Grid
-            const timelineContainer = document.getElementById('timeline-container');
             const blocks = user.timeBlocks[dateStr] || [];
-            
             let timelineHtml = '';
             for(let i=0; i<24; i++) {
-                const hourStr = i.toString().padStart(2, '0') + ':00';
-                const blocksInHour = blocks.filter(b => {
-                    const startHour = parseInt(b.start.split(':')[0]);
-                    return startHour === i;
-                });
-
-                timelineHtml += `
-                <div class="flex border-b border-gray-100 dark:border-gray-800 h-14 relative group hover:bg-gray-50 dark:hover:bg-gray-800/30 transition">
-                    <div class="w-12 text-xs text-gray-400 pt-2 pr-2 text-right shrink-0">${hourStr}</div>
-                    <div class="flex-1 relative py-1 px-2 border-l border-gray-200 dark:border-gray-700">
-                        ${blocksInHour.map(b => `
-                            <div class="absolute inset-x-2 bg-emerald-100 dark:bg-emerald-900/40 border-l-2 border-emerald-500 rounded p-1 text-xs z-10 shadow-sm truncate cursor-pointer hover:bg-emerald-200 transition" onclick="deleteTimeBlock('${dateStr}', '${b.id}')" title="Bấm để xóa">
-                                <span class="font-bold text-emerald-700 dark:text-emerald-300">${b.start} - ${b.end}</span> <span class="text-gray-700 dark:text-gray-300">${b.title}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>`;
+                const blocksInHour = blocks.filter(b => parseInt(b.start.split(':')[0]) === i);
+                timelineHtml += `<div class="flex border-b border-gray-100 dark:border-gray-800 h-14 relative group hover:bg-gray-50 dark:hover:bg-gray-800/30 transition"><div class="w-12 text-xs text-gray-400 pt-2 pr-2 text-right shrink-0">${i.toString().padStart(2,'0')}:00</div><div class="flex-1 relative py-1 px-2 border-l border-gray-200 dark:border-gray-700">${blocksInHour.map(b => { const bTag = user.tags[b.tag]?.color || '#10b981'; return `<div class="absolute inset-x-2 border-l-2 rounded p-1 text-xs z-10 shadow-sm truncate cursor-pointer hover:opacity-80 transition" style="border-color: ${bTag}; background-color: ${bTag}22;" onclick="deleteTimeBlock('${dateStr}', '${b.id}')" title="Bấm để xóa"><span class="font-bold" style="color: ${bTag}">${b.start} - ${b.end}</span> <span class="text-gray-700 dark:text-gray-300">${b.title}</span> <span class="text-[9px] text-gray-500 ml-1">#${b.tag}</span></div>`; }).join('')}</div></div>`;
             }
-            timelineContainer.innerHTML = timelineHtml;
-        }
-
-        function openTimeBlockModal() {
-            document.getElementById('tb-date-input').value = document.getElementById('daily-date-picker').value;
-            document.getElementById('timeblock-form').reset();
-            openModal('timeblock-modal');
+            document.getElementById('timeline-container').innerHTML = timelineHtml;
         }
 
         function handleAddTimeBlock(e) {
@@ -1261,27 +1023,69 @@
             const dateStr = document.getElementById('tb-date-input').value;
             const user = appState.users[appState.currentUser];
             if(!user.timeBlocks[dateStr]) user.timeBlocks[dateStr] = [];
-            user.timeBlocks[dateStr].push({
-                id: Date.now().toString(),
-                start: document.getElementById('tb-start').value,
-                end: document.getElementById('tb-end').value,
-                title: document.getElementById('tb-title').value
-            });
-            saveState();
-            closeModal('timeblock-modal');
-            renderDailyView(dateStr);
+            user.timeBlocks[dateStr].push({ id: Date.now().toString(), start: document.getElementById('tb-start').value, end: document.getElementById('tb-end').value, title: document.getElementById('tb-title').value, tag: document.getElementById('tb-tag').value });
+            saveState(); closeModal('timeblock-modal'); renderDailyView(dateStr); renderDashboard();
         }
 
         function deleteTimeBlock(dateStr, id) {
             if(confirm('Xóa block này?')) {
-                const user = appState.users[appState.currentUser];
-                user.timeBlocks[dateStr] = user.timeBlocks[dateStr].filter(b => b.id !== id);
-                saveState();
-                renderDailyView(dateStr);
+                appState.users[appState.currentUser].timeBlocks[dateStr] = appState.users[appState.currentUser].timeBlocks[dateStr].filter(b => b.id !== id);
+                saveState(); renderDailyView(dateStr);
             }
         }
 
-        // --- HEALTH (FIXED) ---
+        // --- HABIT ---
+        function renderHabits() {
+            const tbody = document.getElementById('habit-table-body');
+            const habits = appState.users[appState.currentUser].habits;
+            const now = new Date();
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            
+            tbody.innerHTML = Object.keys(habits).map(habitName => {
+                let boxes = '';
+                const color = habits[habitName].color || '#8b5cf6';
+                for(let i=1; i<=daysInMonth; i++) {
+                    const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    const isDone = habits[habitName].history[dateStr];
+                    boxes += `<td class="p-1"><div onclick="toggleHabit('${habitName}', '${dateStr}')" class="habit-box mx-auto flex items-center justify-center ${isDone ? 'done' : 'bg-transparent hover:scale-110'}" style="${isDone ? `background-color: ${color};` : ''}"></div></td>`;
+                }
+                // Thêm nút xóa (Req 1)
+                return `<tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 group">
+                    <td class="p-2 font-medium text-sm truncate max-w-[120px] flex items-center justify-between">
+                        ${habitName}
+                        <button onclick="deleteHabit('${habitName}')" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition"><i class="fa-solid fa-trash text-xs"></i></button>
+                    </td>
+                    ${boxes}
+                </tr>`;
+            }).join('');
+        }
+
+        function toggleHabit(name, dateStr) {
+            const habits = appState.users[appState.currentUser].habits;
+            if(!habits[name].history) habits[name].history = {};
+            habits[name].history[dateStr] = !habits[name].history[dateStr];
+            saveState(); renderHabits(); renderDashboardWidgets();
+        }
+
+        function handleAddHabit(e) {
+            e.preventDefault();
+            const name = document.getElementById('habit-title').value.trim();
+            if(name) {
+                const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+                appState.users[appState.currentUser].habits[name] = { color: colors[Math.floor(Math.random() * colors.length)], history: {} };
+                saveState(); closeModal('habit-add-modal'); renderHabits(); document.getElementById('habit-form').reset();
+            }
+        }
+
+        // Thêm nút xóa Habit
+        function deleteHabit(name) {
+            if(confirm(`Xóa thói quen "${name}"?`)) {
+                delete appState.users[appState.currentUser].habits[name];
+                saveState(); renderHabits(); renderDashboardWidgets();
+            }
+        }
+
+        // --- HEALTH ---
         function renderHealthView() {
             const list = document.getElementById('health-metrics-list');
             const health = appState.users[appState.currentUser].health;
@@ -1291,24 +1095,16 @@
                     <div class="flex justify-between items-start mb-2">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center text-white" style="background-color: ${h.color}"><i class="fa-solid ${h.icon}"></i></div>
-                            <div>
-                                <p class="font-bold text-sm">${h.name}</p>
-                                <p class="text-xs text-gray-500">Mục tiêu: ${h.goal} ${h.unit}</p>
-                            </div>
+                            <div><p class="font-bold text-sm">${h.name}</p><p class="text-xs text-gray-500">Mục tiêu: ${h.goal} ${h.unit}</p></div>
                         </div>
                         <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="checkbox" ${h.showOnDash ? 'checked' : ''} onchange="toggleHealthDash('${h.id}')" class="w-3 h-3 accent-appleBlue">
+                            <input type="checkbox" ${h.showOnDash ? 'checked' : ''} onchange="toggleHealthDash('${h.id}')" class="w-3 h-3 accent-primary">
                             <span class="text-[10px] text-gray-400">Hiển thị</span>
                         </label>
                     </div>
                     <div class="mt-2">
-                        <div class="flex justify-between text-xs mb-1">
-                            <span class="font-bold" style="color: ${h.color}">${h.current} / ${h.goal} ${h.unit}</span>
-                            <span>${Math.round((h.current/h.goal)*100)}%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3">
-                            <div class="h-2 rounded-full" style="width: ${Math.min((h.current/h.goal)*100, 100)}%; background-color: ${h.color}"></div>
-                        </div>
+                        <div class="flex justify-between text-xs mb-1"><span class="font-bold" style="color: ${h.color}">${h.current} / ${h.goal} ${h.unit}</span><span>${Math.round((h.current/h.goal)*100)}%</span></div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-3"><div class="h-2 rounded-full" style="width: ${Math.min((h.current/h.goal)*100, 100)}%; background-color: ${h.color}"></div></div>
                         <div class="flex gap-2">
                             <button onclick="updateHealth('${h.id}', 1)" class="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xs py-1.5 rounded transition font-bold">+${h.step || 1}</button>
                             <button onclick="updateHealth('${h.id}', -1)" class="w-8 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xs py-1.5 rounded transition">-</button>
@@ -1331,8 +1127,7 @@
 
         function updateHealth(id, amount) {
             const h = appState.users[appState.currentUser].health.find(x => x.id === id);
-            if(amount > 0) h.current += (h.step || 1);
-            else h.current = Math.max(0, h.current - (h.step || 1));
+            if(amount > 0) h.current += (h.step || 1); else h.current = Math.max(0, h.current - (h.step || 1));
             saveState(); renderHealthView(); renderDashboardWidgets();
         }
 
@@ -1343,15 +1138,14 @@
 
         function handleAddHealthMetric(e) {
             e.preventDefault();
-            const name = document.getElementById('health-name').value;
-            const goal = parseInt(document.getElementById('health-goal').value);
-            const unit = document.getElementById('health-unit').value;
-            const step = parseInt(document.getElementById('health-step').value) || 1;
-            const color = document.getElementById('health-color').value;
-            
             appState.users[appState.currentUser].health.push({
-                id: 'h_' + Date.now(), name, goal, current: 0, unit, color, step,
-                icon: 'fa-heart', showOnDash: true
+                id: 'h_' + Date.now(), 
+                name: document.getElementById('health-name').value, 
+                goal: parseInt(document.getElementById('health-goal').value), 
+                unit: document.getElementById('health-unit').value, 
+                step: parseInt(document.getElementById('health-step').value) || 1, 
+                color: document.getElementById('health-color').value, 
+                current: 0, icon: 'fa-heart', showOnDash: true
             });
             saveState(); renderHealthView();
             document.getElementById('health-name').value = '';
@@ -1360,11 +1154,10 @@
         }
 
         function saveMeal(type, value) {
-            appState.users[appState.currentUser].meals[type] = value;
-            saveState();
+            appState.users[appState.currentUser].meals[type] = value; saveState();
         }
 
-        // --- READING (FIXED) ---
+        // --- READING ---
         function renderReadingView() {
             const books = appState.users[appState.currentUser].books;
             const current = books.find(b => b.status === 'reading');
@@ -1384,94 +1177,38 @@
             const largeContainer = document.getElementById('current-reading-large');
             if (current) {
                 const p = Math.min(Math.round((current.current / current.pages) * 100), 100);
-                largeContainer.innerHTML = `
-                    <div class="w-40 h-64 rounded-xl shadow-2xl overflow-hidden shrink-0 relative bg-gray-200 dark:bg-gray-700">
-                        <img src="${current.cover}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'" class="w-full h-full object-cover">
-                    </div>
-                    <div class="flex-1 flex flex-col justify-center">
-                        <span class="text-xs font-bold text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded w-max mb-2">ĐANG ĐỌC</span>
-                        <h2 class="text-2xl font-bold mb-1">${current.title}</h2>
-                        <p class="text-gray-500 mb-4 text-sm">${current.author}</p>
-                        <div class="flex items-end gap-4 mb-2">
-                            <span class="text-3xl font-extrabold">${current.current}</span>
-                            <span class="text-gray-500 mb-1">/ ${current.pages} trang</span>
-                            <span class="ml-auto font-bold text-emerald-500 text-xl">${p}%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4">
-                            <div class="bg-emerald-500 h-2 rounded-full" style="width: ${p}%"></div>
-                        </div>
-                        <form onsubmit="updateReadingProgress(event, ${current.id})" class="flex gap-3">
-                            <input type="number" id="page-input-${current.id}" min="${current.current}" max="${current.pages}" placeholder="Trang đang đọc..." class="flex-1 p-2 text-sm rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 outline-none">
-                            <button type="submit" class="bg-appleBlue text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 transition">Lưu</button>
-                        </form>
-                    </div>
-                `;
+                largeContainer.innerHTML = `<div class="w-40 h-64 rounded-xl shadow-2xl overflow-hidden shrink-0 relative bg-gray-200 dark:bg-gray-700"><img src="${current.cover}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'" class="w-full h-full object-cover"></div><div class="flex-1 flex flex-col justify-center"><span class="text-xs font-bold text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded w-max mb-2">ĐANG ĐỌC</span><h2 class="text-2xl font-bold mb-1">${current.title}</h2><p class="text-gray-500 mb-4 text-sm">${current.author}</p><div class="flex items-end gap-4 mb-2"><span class="text-3xl font-extrabold">${current.current}</span><span class="text-gray-500 mb-1">/ ${current.pages} trang</span><span class="ml-auto font-bold text-emerald-500 text-xl">${p}%</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4"><div class="bg-emerald-500 h-2 rounded-full" style="width: ${p}%"></div></div><form onsubmit="updateReadingProgress(event, ${current.id})" class="flex gap-3"><input type="number" id="page-input-${current.id}" min="${current.current}" max="${current.pages}" placeholder="Trang đang đọc..." class="flex-1 p-2 text-sm rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 outline-none"><button type="submit" class="bg-primary text-white px-4 py-2 rounded-xl text-sm font-medium hover:opacity-90 transition">Lưu</button></form></div>`;
             } else { largeContainer.innerHTML = `<p class="p-10 text-gray-500">Chưa có sách nào đang đọc chính.</p>`; }
 
-            document.getElementById('reading-list-parallel').innerHTML = parallel.length ? parallel.map(b => `
-                <div class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer hover-item border border-transparent hover:border-gray-200 dark:hover:border-gray-700" onclick="setAsReading(${b.id})">
-                    <img src="${b.cover}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'" class="w-10 h-14 object-cover rounded shadow">
-                    <div class="min-w-0 flex-1">
-                        <p class="font-bold text-sm truncate">${b.title}</p>
-                        <p class="text-xs text-gray-500">${b.current}/${b.pages} tr</p>
-                    </div>
-                </div>
-            `).join('') : `<p class="text-sm text-gray-500">Không có.</p>`;
+            document.getElementById('reading-list-parallel').innerHTML = parallel.length ? parallel.map(b => `<div class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer hover-item border border-transparent hover:border-gray-200 dark:hover:border-gray-700" onclick="setAsReading(${b.id})"><img src="${b.cover}" class="w-10 h-14 object-cover rounded shadow"><div class="min-w-0 flex-1"><p class="font-bold text-sm truncate">${b.title}</p><p class="text-xs text-gray-500">${b.current}/${b.pages} tr</p></div></div>`).join('') : `<p class="text-sm text-gray-500">Không có.</p>`;
 
-            // Year Filter logic
             const yearFilter = document.getElementById('reading-year-filter');
             const years = [...new Set(finished.map(b => b.yearFinished).filter(y => y))].sort((a,b) => b-a);
             const selectedYear = parseInt(yearFilter.value) || currentYear;
-            
             if(years.length > 0) {
                 yearFilter.innerHTML = years.map(y => `<option value="${y}" ${y === selectedYear ? 'selected' : ''}>Năm ${y}</option>`).join('');
-                if(!years.includes(selectedYear)) {
-                    yearFilter.innerHTML += `<option value="${currentYear}" selected>Năm ${currentYear}</option>`;
-                }
-            } else {
-                yearFilter.innerHTML = `<option value="${currentYear}">Năm ${currentYear}</option>`;
-            }
+                if(!years.includes(selectedYear)) yearFilter.innerHTML += `<option value="${currentYear}" selected>Năm ${currentYear}</option>`;
+            } else { yearFilter.innerHTML = `<option value="${currentYear}">Năm ${currentYear}</option>`; }
 
-            const filteredFinished = finished.filter(b => b.yearFinished === selectedYear);
-            document.getElementById('reading-list-finished').innerHTML = filteredFinished.length ? filteredFinished.map(b => `
-                <div class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-xl hover-item group relative">
-                    <img src="${b.cover}" onerror="this.src='https://via.placeholder.com/150x200?text=No+Cover'" class="w-10 h-14 object-cover rounded shadow grayscale">
-                    <div class="flex-1 min-w-0">
-                        <p class="font-bold text-sm truncate">${b.title}</p>
-                        <div class="text-amber-400 text-xs mt-1 cursor-pointer" onclick="rateBook(${b.id})">
-                            ${Array(5).fill(0).map((_, i) => `<i class="fa-${i < (b.rating || 0) ? 'solid' : 'regular'} fa-star hover:scale-125 transition"></i>`).join('')}
-                        </div>
-                    </div>
-                    <button onclick="deleteBook(${b.id})" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition absolute right-2"><i class="fa-solid fa-trash text-xs"></i></button>
-                </div>
-            `).join('') : `<p class="text-sm text-gray-500">Không có sách nào.</p>`;
+            document.getElementById('reading-list-finished').innerHTML = finished.filter(b => b.yearFinished === selectedYear).map(b => `<div class="flex items-center gap-3 p-2 bg-gray-50 dark:bg-gray-800 rounded-xl hover-item group relative"><img src="${b.cover}" class="w-10 h-14 object-cover rounded shadow grayscale"><div class="flex-1 min-w-0"><p class="font-bold text-sm truncate">${b.title}</p><div class="text-amber-400 text-xs mt-1">${Array(5).fill(0).map((_, i) => `<i class="fa-${i < (b.rating || 0) ? 'solid' : 'regular'} fa-star"></i>`).join('')}</div></div><button onclick="deleteBook(${b.id})" class="opacity-0 group-hover:opacity-100 text-red-400 transition absolute right-2"><i class="fa-solid fa-trash text-xs"></i></button></div>`).join('') || `<p class="text-sm text-gray-500">Không có sách nào.</p>`;
         }
 
         function updateReadingProgress(e, id) {
             e.preventDefault();
-            const input = document.getElementById(`page-input-${id}`);
-            const val = parseInt(input.value);
+            const val = parseInt(document.getElementById(`page-input-${id}`).value);
             const book = appState.users[appState.currentUser].books.find(b => b.id === id);
-            
-            if(!isNaN(val) && val > 0 && val <= book.pages) {
+            if(val > 0 && val <= book.pages) {
                 book.current = val;
-                if(val === book.pages) {
-                    book.status = 'finished';
-                    book.yearFinished = new Date().getFullYear();
-                    book.rating = 5;
-                    alert('Chúc mừng bạn đã đọc xong cuốn sách này!');
-                }
+                if(val === book.pages) { book.status = 'finished'; book.yearFinished = new Date().getFullYear(); book.rating = 5; alert('Chúc mừng bạn đã đọc xong!'); }
                 saveState(); renderReadingView(); renderDashboardWidgets();
-            } else {
-                alert('Số trang không hợp lệ!');
             }
         }
 
         function deleteBook(id) {
-            if(!confirm('Bạn có chắc muốn xóa cuốn sách này?')) return;
-            const user = appState.users[appState.currentUser];
-            user.books = user.books.filter(b => b.id !== id);
-            saveState(); renderReadingView();
+            if(confirm('Xóa sách này?')) {
+                appState.users[appState.currentUser].books = appState.users[appState.currentUser].books.filter(b => b.id !== id);
+                saveState(); renderReadingView();
+            }
         }
 
         function setAsReading(id) {
@@ -1482,358 +1219,155 @@
 
         function handleAddBook(e) {
             e.preventDefault();
-            appState.users[appState.currentUser].books.push({
-                id: Date.now(), title: document.getElementById('book-title').value, author: document.getElementById('book-author').value,
-                pages: parseInt(document.getElementById('book-pages').value), cover: document.getElementById('book-cover').value || 'https://via.placeholder.com/150x200?text=No+Cover',
-                current: 0, status: 'parallel', yearFinished: null
-            });
+            appState.users[appState.currentUser].books.push({ id: Date.now(), title: document.getElementById('book-title').value, author: document.getElementById('book-author').value, pages: parseInt(document.getElementById('book-pages').value), cover: document.getElementById('book-cover').value || 'https://via.placeholder.com/150x200?text=No+Cover', current: 0, status: 'parallel', yearFinished: null });
             saveState(); closeModal('add-book-modal'); renderReadingView(); document.getElementById('add-book-form').reset();
         }
 
-        function rateBook(id) {
-            const book = appState.users[appState.currentUser].books.find(b => b.id === id);
-            const newRating = prompt("Đánh giá số sao (1-5):", book.rating || 5);
-            if(newRating && newRating >= 1 && newRating <= 5) {
-                book.rating = parseInt(newRating); saveState(); renderReadingView();
-            }
-        }
-
-        // --- APP GRID (FIXED) ---
-        function renderAppGrid() {
-            const grid = document.getElementById('app-grid-container');
-            grid.innerHTML = appState.users[appState.currentUser].appGrid.map(app => `
-                <div class="app-icon-container group">
-                    <button onclick="deleteApp('${app.id}')" class="delete-app-btn"><i class="fa-solid fa-xmark"></i></button>
-                    <a href="${app.url}" target="_blank" class="app-icon flex flex-col items-center justify-center" style="color: ${app.color || '#333'}">
-                        ${app.imgBase64 ? `<img src="${app.imgBase64}" class="w-full h-full object-cover rounded-2xl">` : `<i class="${app.icon || 'fa-solid fa-globe'}"></i>`}
-                    </a>
-                    <span class="text-xs text-center text-gray-700 dark:text-gray-300 font-medium truncate w-full">${app.name}</span>
-                </div>
-            `).join('');
-        }
-
-        function deleteApp(id) {
-            if(!confirm('Xóa app này khỏi màn hình chính?')) return;
-            const user = appState.users[appState.currentUser];
-            user.appGrid = user.appGrid.filter(a => a.id !== id);
-            saveState(); renderAppGrid();
-        }
-
-        function handleAddApp(e) {
-            e.preventDefault();
-            const name = document.getElementById('app-name').value;
-            const url = document.getElementById('app-url').value;
-            const icon = document.getElementById('app-icon').value || 'fa-solid fa-globe';
-            const color = document.getElementById('app-color').value;
-            const fileInput = document.getElementById('app-image');
-
-            const saveApp = (base64 = null) => {
-                appState.users[appState.currentUser].appGrid.push({
-                    id: Date.now().toString(), name, url, icon, color, imgBase64: base64
-                });
-                saveState(); closeModal('add-app-modal'); renderAppGrid();
-                document.getElementById('app-form').reset();
-            };
-
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = function(event) { saveApp(event.target.result); };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                saveApp(null);
-            }
-        }
-
-        // --- PROFILE (FIXED) ---
-        function renderProfile() {
-            const p = appState.users[appState.currentUser].profile || {};
-            document.getElementById('prof-name').value = p.name || '';
-            document.getElementById('prof-dob').value = p.dob || '';
-            document.getElementById('prof-job').value = p.job || '';
-            document.getElementById('prof-edu').value = p.edu || '';
-            document.getElementById('prof-location').value = p.location || '';
-            document.getElementById('prof-bio').value = p.bio || '';
-        }
-
-        function saveProfile(e) {
-            e.preventDefault();
-            appState.users[appState.currentUser].profile = {
-                name: document.getElementById('prof-name').value,
-                dob: document.getElementById('prof-dob').value,
-                job: document.getElementById('prof-job').value,
-                edu: document.getElementById('prof-edu').value,
-                location: document.getElementById('prof-location').value,
-                bio: document.getElementById('prof-bio').value
-            };
-            saveState();
-            alert('Đã lưu thông tin cá nhân!');
-        }
-
-        // --- POMODORO ---
+        // --- POMODORO (ĐÃ SỬA LỖI HOÀN TOÀN) ---
         let pomoTime = 25 * 60; let pomoTotal = 25 * 60; let pomoInterval = null; let isPomoRunning = false; let pomoMode = 'focus'; let pomoCount = 0;
 
         function togglePomo() {
-            const mainBtn = document.getElementById('main-pomo-btn');
+            const mainBtn = document.getElementById('main-pomo-btn'); 
             const miniBtn = document.getElementById('mini-pomo-btn');
+            
             if (isPomoRunning) {
                 clearInterval(pomoInterval);
-                if(mainBtn) mainBtn.innerHTML = '<i class="fa-solid fa-play text-xl ml-1"></i>';
+                if(mainBtn) mainBtn.innerHTML = '<i class="fa-solid fa-play text-2xl ml-1"></i>';
                 if(miniBtn) miniBtn.innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>';
             } else {
-                if(mainBtn) mainBtn.innerHTML = '<i class="fa-solid fa-pause text-xl"></i>';
+                if(mainBtn) mainBtn.innerHTML = '<i class="fa-solid fa-pause text-2xl"></i>';
                 if(miniBtn) miniBtn.innerHTML = '<i class="fa-solid fa-pause text-sm"></i>';
-                pomoInterval = setInterval(() => {
-                    if (pomoTime > 0) { pomoTime--; updatePomodoroUI(); } else { handlePomoComplete(); }
+                pomoInterval = setInterval(() => { 
+                    if (pomoTime > 0) { pomoTime--; updatePomodoroUI(); } 
+                    else { handlePomoComplete(); } 
                 }, 1000);
             }
             isPomoRunning = !isPomoRunning;
         }
 
-        function resetPomo() {
-            clearInterval(pomoInterval); isPomoRunning = false;
-            pomoTime = pomoMode === 'focus' ? 25*60 : (pomoMode === 'shortBreak' ? 5*60 : 15*60);
-            pomoTotal = pomoTime;
-            document.getElementById('main-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-xl ml-1"></i>';
-            document.getElementById('mini-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>';
-            updatePomodoroUI();
+        function resetPomo() { 
+            clearInterval(pomoInterval); isPomoRunning = false; 
+            pomoTime = pomoMode === 'focus' ? 25*60 : (pomoMode === 'shortBreak' ? 5*60 : 15*60); 
+            pomoTotal = pomoTime; 
+            if(document.getElementById('main-pomo-btn')) document.getElementById('main-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-2xl ml-1"></i>'; 
+            if(document.getElementById('mini-pomo-btn')) document.getElementById('mini-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>'; 
+            updatePomodoroUI(); 
         }
 
-        function handlePomoAction() {
-            if(pomoMode === 'focus') { pomoTime = 0; handlePomoComplete(); }
-            else { pomoMode = 'focus'; pomoTime = 25*60; pomoTotal = pomoTime; updatePomodoroUI(); }
+        function handlePomoAction() { 
+            if(pomoMode === 'focus') { pomoTime = 0; handlePomoComplete(); } 
+            else { pomoMode = 'focus'; pomoTime = 25*60; pomoTotal = pomoTime; updatePomodoroUI(); } 
         }
 
-        function handlePomoComplete() {
-            clearInterval(pomoInterval); isPomoRunning = false;
-            if(pomoMode === 'focus') {
-                pomoCount++;
-                const user = appState.users[appState.currentUser];
-                const dayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
-                user.pomodoroStats[dayIndex] = (user.pomodoroStats[dayIndex] || 0) + 1;
-                
-                const plants = ['🌱', '🌿', '🌳', '🌻', '🌸', '🌵', '🍀'];
-                user.garden.push(plants[Math.floor(Math.random() * plants.length)]);
-                saveState(); renderGarden();
-                
-                if(pomoCount % 4 === 0) { pomoMode = 'longBreak'; pomoTime = 15*60; }
-                else { pomoMode = 'shortBreak'; pomoTime = 5*60; }
-            } else { pomoMode = 'focus'; pomoTime = 25*60; }
-            pomoTotal = pomoTime;
-            document.getElementById('main-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-xl ml-1"></i>';
-            document.getElementById('mini-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>';
-            updatePomodoroUI(); initCharts();
+        function handlePomoComplete() { 
+            clearInterval(pomoInterval); isPomoRunning = false; 
+            if(pomoMode === 'focus') { 
+                pomoCount++; 
+                const user = appState.users[appState.currentUser]; 
+                const dayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; 
+                user.pomodoroStats[dayIndex] = (user.pomodoroStats[dayIndex] || 0) + 1; 
+                const plants = ['🌱', '🌿', '🌳', '🌻', '🌸']; 
+                user.garden.push(plants[Math.floor(Math.random() * plants.length)]); 
+                saveState(); renderGarden(); 
+                if(pomoCount % 4 === 0) { pomoMode = 'longBreak'; pomoTime = 15*60; } 
+                else { pomoMode = 'shortBreak'; pomoTime = 5*60; } 
+            } else { pomoMode = 'focus'; pomoTime = 25*60; } 
+            pomoTotal = pomoTime; 
+            if(document.getElementById('main-pomo-btn')) document.getElementById('main-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-2xl ml-1"></i>'; 
+            if(document.getElementById('mini-pomo-btn')) document.getElementById('mini-pomo-btn').innerHTML = '<i class="fa-solid fa-play text-sm ml-1"></i>'; 
+            updatePomodoroUI(); 
         }
 
-        function updatePomodoroUI() {
-            const mins = Math.floor(pomoTime / 60); const secs = pomoTime % 60;
-            const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        function updatePomodoroUI() { 
+            const mins = Math.floor(pomoTime / 60); 
+            const secs = pomoTime % 60; 
+            const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`; 
             
-            document.getElementById('main-timer-display').innerText = timeStr;
-            document.getElementById('mini-timer-display').innerText = timeStr;
+            if(document.getElementById('main-timer-display')) document.getElementById('main-timer-display').innerText = timeStr; 
+            if(document.getElementById('mini-timer-display')) document.getElementById('mini-timer-display').innerText = timeStr; 
             
-            const stateStr = pomoMode === 'focus' ? 'Deep Work' : (pomoMode === 'shortBreak' ? 'Short Break' : 'Long Break');
-            document.getElementById('pomo-state').innerText = stateStr;
-            document.getElementById('mini-pomo-state').innerText = stateStr;
-
-            const actionBtn = document.getElementById('pomo-action-btn');
-            if(pomoMode === 'focus') {
-                actionBtn.innerText = 'Mark as Done';
-                actionBtn.className = 'text-sm font-bold text-green-600 hover:underline';
-            } else {
-                actionBtn.innerText = 'Skip Break';
-                actionBtn.className = 'text-sm font-bold text-orange-500 hover:underline';
-            }
-
-            const progress = 1 - (pomoTime / pomoTotal);
-            document.getElementById('main-pomo-ring').style.strokeDashoffset = 703 - (progress * 703);
-            document.getElementById('mini-pomo-ring').style.strokeDashoffset = 452 - (progress * 452);
+            const stateStr = pomoMode === 'focus' ? 'Deep Work' : (pomoMode === 'shortBreak' ? 'Short Break' : 'Long Break'); 
+            if(document.getElementById('pomo-state')) document.getElementById('pomo-state').innerText = stateStr; 
+            if(document.getElementById('mini-pomo-state')) document.getElementById('mini-pomo-state').innerText = stateStr; 
             
-            const select = document.getElementById('pomo-task-select');
-            const todayStr = new Date().toISOString().split('T')[0];
-            const userTasks = appState.users[appState.currentUser].tasks[todayStr] || [];
+            const actionBtn = document.getElementById('pomo-action-btn'); 
+            if(actionBtn) { 
+                if(pomoMode === 'focus') { actionBtn.innerText = 'Mark as Done'; actionBtn.className = 'text-sm font-bold text-green-600 hover:underline'; } 
+                else { actionBtn.innerText = 'Skip Break'; actionBtn.className = 'text-sm font-bold text-orange-500 hover:underline'; } 
+            } 
             
-            if (document.activeElement !== select && select) {
-                const currentVal = select.value;
-                select.innerHTML = '<option value="">-- Không chọn --</option>' + userTasks.filter(t=>!t.done).map(t => `<option value="${t.id}">${t.title}</option>`).join('');
-                if(select.querySelector(`option[value="${currentVal}"]`)) select.value = currentVal;
-            }
-            updateAttachedTaskDisplay();
+            const progress = 1 - (pomoTime / pomoTotal); 
+            if(document.getElementById('main-pomo-ring')) document.getElementById('main-pomo-ring').style.strokeDashoffset = 804 - (progress * 804); 
+            if(document.getElementById('mini-pomo-ring')) document.getElementById('mini-pomo-ring').style.strokeDashoffset = 452 - (progress * 452); 
         }
 
-        function updateAttachedTaskDisplay() {
-            const select = document.getElementById('pomo-task-select');
-            if(!select) return;
-            const taskId = select.value;
-            const display = document.getElementById('pomo-attached-task');
-            if(!taskId) { display.classList.add('hidden'); return; }
-            
-            const todayStr = new Date().toISOString().split('T')[0];
-            const task = (appState.users[appState.currentUser].tasks[todayStr] || []).find(t => t.id === taskId);
-            
-            if(task) {
-                display.innerHTML = `<i class="fa-solid fa-bullseye mr-1"></i> ${task.title}`;
-                display.classList.remove('hidden');
-            } else { display.classList.add('hidden'); }
+        function renderGarden() { 
+            const garden = appState.users[appState.currentUser].garden; 
+            if(document.getElementById('mini-garden')) document.getElementById('mini-garden').innerHTML = garden.map(p => `<span>${p}</span>`).join(''); 
+            if(garden.length > 0) { 
+                if(document.getElementById('mini-tree')) document.getElementById('mini-tree').innerText = garden[garden.length - 1]; 
+                if(document.getElementById('main-tree')) document.getElementById('main-tree').innerText = garden[garden.length - 1]; 
+            } 
         }
 
-        // --- TASK LOGIC ---
+        function setPomoPreset(f, b) { pomoTime = f * 60; pomoTotal = f * 60; pomoMode = 'focus'; updatePomodoroUI(); }
+        function updateAttachedTaskDisplay() {}
+        
+        function setupBibleVerse() { const verses = [{ ref: "Thi Thiên 23:1", text: "Đức Giê-hô-va là Đấng chăn giữ tôi..." }, { ref: "Phi-líp 4:13", text: "Tôi làm được mọi sự..." }]; const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24); const v = verses[dayOfYear % verses.length]; document.getElementById('bible-verse-ref').innerText = v.ref; document.getElementById('bible-verse-text').innerText = `"${v.text}"`; }
+        
+        function toggleUserMenu() { document.getElementById('user-menu').classList.toggle('hidden'); }
+        function closeUserMenu() { document.getElementById('user-menu').classList.add('hidden'); }
+        function updateUserUI() { updateGreeting(); document.getElementById('user-list-dropdown').innerHTML = `<div class="px-3 py-2 text-sm font-bold text-primary">${appState.currentUser} (Bạn)</div>`; }
+        function switchSettingsTab(tab) { ['appearance', 'tags'].forEach(t => { document.getElementById(`settings-content-${t}`).classList.add('hidden'); document.getElementById(`set-tab-${t}`).classList.remove('active'); }); document.getElementById(`settings-content-${tab}`).classList.remove('hidden'); document.getElementById(`set-tab-${tab}`).classList.add('active'); if(tab === 'tags') renderSettingsTags(); }
+        
+        function setupDragScroll() { 
+            const slider = document.getElementById('schedule-container'); 
+            let isDown = false, startX, scrollLeft; 
+            slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; }); 
+            slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); }); 
+            slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); }); 
+            slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; slider.scrollLeft = scrollLeft - (x - startX) * 1.5; }); 
+        }
+        
+        function changeWeek(dir) { currentWeekOffset += dir; renderDashboard(); }
+        
+        // --- MODAL HELPERS ---
         function openTaskModal(dateStr) { 
             document.getElementById('task-date-input').value = dateStr || new Date().toISOString().split('T')[0]; 
             document.getElementById('task-form').reset();
             document.getElementById('fixed-task-fields').classList.add('hidden');
-            openModal('task-modal'); 
+            populateAllTagDropdowns(); openModal('task-modal'); 
         }
-        
-        function toggleFixedTaskFields() {
-            const isChecked = document.getElementById('task-fixed').checked;
-            document.getElementById('fixed-task-fields').classList.toggle('hidden', !isChecked);
-        }
-
         function handleAddTask(e) {
             e.preventDefault();
             const dateStr = document.getElementById('task-date-input').value;
             const user = appState.users[appState.currentUser];
             if (!user.tasks[dateStr]) user.tasks[dateStr] = [];
             const isFixed = document.getElementById('task-fixed').checked;
-
-            user.tasks[dateStr].push({
-                id: Date.now().toString(),
-                title: document.getElementById('task-title').value,
-                tag: document.getElementById('task-tag').value,
-                pomos: parseInt(document.getElementById('task-pomo').value) || 1,
-                isFixed: isFixed,
-                startTime: isFixed ? document.getElementById('task-start-time').value : null,
-                endTime: isFixed ? document.getElementById('task-end-time').value : null,
-                done: false
-            });
-            saveState(); closeModal('task-modal'); renderDashboard();
-            if(document.getElementById('daily-modal').classList.contains('active')) renderDailyView(dateStr);
+            user.tasks[dateStr].push({ id: Date.now().toString(), title: document.getElementById('task-title').value, tag: document.getElementById('task-tag').value, pomos: parseInt(document.getElementById('task-pomo').value) || 1, isFixed: isFixed, startTime: isFixed ? document.getElementById('task-start-time').value : null, endTime: isFixed ? document.getElementById('task-end-time').value : null, done: false });
+            saveState(); closeModal('task-modal'); renderDashboard(); if(document.getElementById('daily-modal').classList.contains('active')) renderDailyView(dateStr);
         }
-
         function toggleTask(dateStr, taskId) {
             const user = appState.users[appState.currentUser];
             const task = user.tasks[dateStr].find(t => t.id === taskId);
             if (task) { task.done = !task.done; saveState(); renderDashboard(); if(document.getElementById('daily-modal').classList.contains('active')) renderDailyView(dateStr); }
         }
-
         function deleteTask(dateStr, taskId) {
             const user = appState.users[appState.currentUser];
             user.tasks[dateStr] = user.tasks[dateStr].filter(t => t.id !== taskId);
             saveState(); renderDashboard(); if(document.getElementById('daily-modal').classList.contains('active')) renderDailyView(dateStr);
         }
-
-        // --- MISC ---
-        function renderGarden() {
-            const garden = appState.users[appState.currentUser].garden;
-            document.getElementById('mini-garden').innerHTML = garden.map(p => `<span>${p}</span>`).join('');
-            if(garden.length > 0) {
-                document.getElementById('mini-tree').innerText = garden[garden.length - 1];
-                document.getElementById('main-tree').innerText = garden[garden.length - 1];
-            }
+        function openTimeBlockModal() {
+            document.getElementById('tb-date-input').value = document.getElementById('daily-date-picker').value;
+            document.getElementById('timeblock-form').reset();
+            populateAllTagDropdowns(); openModal('timeblock-modal');
         }
-
-        function setupBibleVerse() {
-            const verses = [
-                { ref: "Thi Thiên 23:1", text: "Đức Giê-hô-va là Đấng chăn giữ tôi; tôi sẽ không thiếu thốn gì." },
-                { ref: "Phi-líp 4:13", text: "Tôi làm được mọi sự nhờ Đấng ban thêm sức cho tôi." }
-            ];
-            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-            const v = verses[dayOfYear % verses.length];
-            document.getElementById('bible-verse-ref').innerText = v.ref;
-            document.getElementById('bible-verse-text').innerText = `"${v.text}"`;
-        }
-
-        function initCharts() {
-            const ctxFocus = document.getElementById('focusChart')?.getContext('2d');
-            if(ctxFocus && !window.myChart) {
-                window.myChart = new Chart(ctxFocus, {
-                    type: 'bar', data: { labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'], datasets: [{ data: appState.users[appState.currentUser].pomodoroStats, backgroundColor: '#6366f1', borderRadius: 4 }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-            }
-        }
-
-        // --- SHORTCUTS ---
-        function handleGlobalShortcuts(e) {
-            if(['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-            const key = e.code;
-            const action = appState.users[appState.currentUser].shortcuts[key];
-            if(action) { e.preventDefault(); try { eval(action); } catch(err) { console.error(err); } }
-            if(e.key === 'Escape') { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); closeSidebar(); }
-        }
-
-        function renderShortcuts() {
-            const list = document.getElementById('shortcuts-list');
-            const shortcuts = appState.users[appState.currentUser].shortcuts;
-            list.innerHTML = Object.keys(shortcuts).map(key => `
-                <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <span class="font-medium text-sm">${shortcuts[key]}</span>
-                    <input type="text" readonly value="${key}" onkeydown="captureShortcut(event, '${key}')" class="w-24 text-center p-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm cursor-pointer" placeholder="Bấm phím...">
-                </div>
-            `).join('');
-        }
-
-        function captureShortcut(e, oldKey) {
-            e.preventDefault();
-            const newKey = e.code;
-            if(newKey === 'Escape') return;
-            const shortcuts = appState.users[appState.currentUser].shortcuts;
-            const action = shortcuts[oldKey];
-            delete shortcuts[oldKey];
-            shortcuts[newKey] = action;
-            saveState(); renderShortcuts();
-        }
-
-        // --- AUTH & SETTINGS ---
-        function applyTheme(t) { if(t==='dark' || (t==='system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
-        function toggleTheme() { currentTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark'; applyTheme(currentTheme); localStorage.setItem('auraplan_theme', currentTheme); setThemeButtonsUI(); }
-        function setTheme(t) { currentTheme = t; applyTheme(t); localStorage.setItem('auraplan_theme', t); setThemeButtonsUI(); }
-        function setThemeButtonsUI() {
-            ['light', 'dark'].forEach(t => {
-                const btn = document.getElementById(`theme-btn-${t}`);
-                if(btn) { if(t === currentTheme) btn.classList.add('border-appleBlue'); else btn.classList.remove('border-appleBlue'); }
-            });
-        }
-        function switchSettingsTab(tab) {
-            ['appearance', 'shortcuts'].forEach(t => {
-                document.getElementById(`settings-content-${t}`).classList.add('hidden');
-                document.getElementById(`set-tab-${t}`).classList.remove('active');
-            });
-            document.getElementById(`settings-content-${tab}`).classList.remove('hidden');
-            document.getElementById(`set-tab-${tab}`).classList.add('active');
-        }
-        function toggleUserMenu() { document.getElementById('user-menu').classList.toggle('hidden'); }
-        function closeUserMenu() { document.getElementById('user-menu').classList.add('hidden'); }
-        function updateUserUI() { updateGreeting(); document.getElementById('user-list-dropdown').innerHTML = `<div class="px-3 py-2 text-sm font-bold text-appleBlue">${appState.currentUser} (Bạn)</div>`; }
+        function toggleFixedTaskFields() { const isChecked = document.getElementById('task-fixed').checked; document.getElementById('fixed-task-fields').classList.toggle('hidden', !isChecked); }
+        function openSpotlight() { document.getElementById('spotlight-modal').classList.add('active'); document.getElementById('spotlight-input').focus(); }
+        function saveProfile(e) { e.preventDefault(); alert('Tính năng đang phát triển!'); }
+        function renderProfile() {}
         function checkDailyLogin() {}
-        
-        // Drag scroll setup
-        function setupDragScroll() {
-            const slider = document.getElementById('schedule-container');
-            let isDown = false, startX, scrollLeft;
-            slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('active'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
-            slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); });
-            slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); });
-            slider.addEventListener('mousemove', (e) => {
-                if (!isDown) return; e.preventDefault();
-                const x = e.pageX - slider.offsetLeft;
-                slider.scrollLeft = scrollLeft - (x - startX) * 2;
-            });
-        }
-        
-        // Dummy funcs to prevent errors
-        function renderHabits() {}
-        function renderFinanceView() {}
         function renderStreakCalendar() {}
-        function exportICS(range) { alert('Tính năng Export đang phát triển.'); }
-        function openSpotlight() { openModal('spotlight-modal'); document.getElementById('spotlight-input').focus(); }
-        function handleSpotlight() {}
-        function editReadingGoal() {}
-        function addTransaction(e) { e.preventDefault(); }
-        function addWishlistItem() {}
-        function deleteWishlist() {}
-        function handleAddLink(e) { e.preventDefault(); closeModal('add-link-modal'); }
-        function handleAddHabit(e) { e.preventDefault(); closeModal('habit-add-modal'); }
     </script>
 </body>
 </html>
