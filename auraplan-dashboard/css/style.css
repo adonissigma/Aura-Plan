@@ -1,1 +1,49 @@
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
 
+/* Glassmorphism */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    transition: all 0.3s ease;
+}
+.dark .glass-panel {
+    background: rgba(28, 28, 30, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.1);
+}
+
+.progress-ring__circle {
+    transition: stroke-dashoffset 0.8s ease-in-out;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+}
+
+/* Custom Checkbox */
+.custom-checkbox input:checked + div { background-color: #10b981; border-color: #10b981; }
+.custom-checkbox input:checked + div i { opacity: 1; transform: scale(1); }
+.custom-checkbox div i { opacity: 0; transform: scale(0.5); transition: all 0.2s ease; }
+
+/* Background Gradients */
+.bg-gradient-1 { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
+.bg-gradient-2 { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); }
+.bg-gradient-3 { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
+.bg-gradient-4 { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
+
+.bg-image-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1; transition: all 1s ease; opacity: 0.15;
+}
+.dark .bg-image-overlay { opacity: 0.05; }
