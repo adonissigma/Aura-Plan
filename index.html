@@ -930,16 +930,27 @@
             const btn = document.getElementById('auth-submit-btn');
             btn.innerText = 'Đang xử lý...';
 
-            if (isSignUpMode) {
-                const { data, error } = await supabase.auth.signUp({ email, password });
-                if (error) alert(error.message);
-                else alert('Đăng ký thành công! Hãy kiểm tra email để xác nhận (nếu có bật xác nhận), sau đó đăng nhập.');
-            } else {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) alert(error.message);
-                else { loadAppData(); }
+            try {
+                if (isSignUpMode) {
+                    const { data, error } = await supabase.auth.signUp({ email, password });
+                    if (error) throw error;
+                    alert('Đăng ký thành công! Hãy kiểm tra email để xác nhận (nếu có), sau đó đăng nhập.');
+                    toggleAuthMode(); // Chuyển về form đăng nhập
+                } else {
+                    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    // Thành công
+                    currentUser = data.user;
+                    document.getElementById('auth-screen').classList.add('hidden');
+                    document.getElementById('user-email-display').innerText = currentUser.email;
+                    await loadAppData();
+                }
+            } catch (error) {
+                alert('Lỗi: ' + error.message); // Hiển thị lỗi lên màn hình
+                console.error(error);
+            } finally {
+                btn.innerText = isSignUpMode ? 'Đăng Ký' : 'Đăng Nhập';
             }
-            btn.innerText = isSignUpMode ? 'Đăng Ký' : 'Đăng Nhập';
         }
 
         function toggleAuthMode() {
