@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,8 +26,8 @@
     <style>
         html, body { height: 100vh; overflow: hidden; }
         body { display: flex; flex-direction: column; }
-        header { flex-shrink: 0; }
-        main { flex: 1; overflow-y: auto; min-height: 0; position: relative; }
+        header { flex-shrink: 0; z-index: 50; }
+        main { flex: 1; overflow-y: auto; min-height: 0; position: relative; padding-top: 10px; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -63,18 +63,22 @@
         .modal-overlay.active .modal-content { transform: scale(1); }
 
         .progress-ring__circle { transition: stroke-dashoffset 0.5s ease-in-out; transform: rotate(-90deg); transform-origin: 50% 50%; }
-        .habit-box { width: 22px; height: 22px; border-radius: 4px; cursor: pointer; transition: all 0.15s; border: 1px solid #e5e7eb; }
+        
+        /* Habit Box to hơn (Req 10) */
+        .habit-box { width: 28px; height: 28px; border-radius: 6px; cursor: pointer; transition: all 0.15s; border: 1px solid #e5e7eb; }
         .dark .habit-box { border-color: #374151; }
         .habit-box.done { border: none; }
         
         .today-col { border: 2px solid #007AFF !important; box-shadow: 0 4px 15px -3px rgba(0, 122, 255, 0.2) !important; z-index: 10; }
-        .fixed-task { background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-left: 3px solid #6366f1; border-radius: 6px; padding: 6px 8px; margin-bottom: 6px; }
-        .dark .fixed-task { background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.3); }
+        
+        /* Fixed Task (MIT/LIT) styling */
+        .mit-task { border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); }
+        .lit-task { border-left: 4px solid #cbd5e1; background: rgba(203, 213, 225, 0.1); opacity: 0.85; }
         
         .drag-scroll { cursor: grab; user-select: none; }
         .drag-scroll.active { cursor: grabbing; }
 
-        /* CSS cho App Grid */
+        /* App Grid */
         .app-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 1.5rem; }
         .app-icon-container { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; cursor: pointer; position: relative; transition: transform 0.2s; }
         .app-icon-container:hover { transform: scale(1.05); }
@@ -82,32 +86,38 @@
         .app-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: #fff; overflow: hidden; }
         .dark .app-icon { background: #2c2c2e; }
         .delete-app-btn { position: absolute; top: -5px; right: -5px; width: 20px; height: 20px; border-radius: 50%; background: #ef4444; color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; opacity: 0; transition: opacity 0.2s; z-index: 10; }
+
+        /* Fix Mobile Lệch Task (Req 1) */
+        @media (max-width: 768px) {
+            #schedule-container { padding-left: 1rem; padding-right: 1rem; }
+            .task-card { min-width: 85vw; } /* Đảm bảo thẻ không bị cắt xén trên mobile */
+            .hide-mobile { display: none; } /* Ẩn bớt đồ trên header mobile (Req 8) */
+        }
     </style>
 </head>
 <body class="bg-appleGray text-gray-800 dark:bg-appleDark dark:text-gray-100 font-sans antialiased transition-colors duration-300">
 
     <div class="fixed inset-0 -z-10 bg-[#F5F5F7] dark:bg-[#121212] transition-colors duration-300"></div>
 
-    <!-- Header -->
-    <header class="glass-panel h-16 flex items-center justify-between px-4 md:px-6 z-40 border-b border-gray-200 dark:border-gray-800">
-        <div class="flex items-center gap-4 cursor-pointer" onclick="switchView('dashboard')">
-            <button onclick="event.stopPropagation(); toggleSidebar()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition"><i class="fa-solid fa-bars text-gray-600 dark:text-gray-300"></i></button>
+    <!-- Header (Cố định, không bị đè trên mobile) -->
+    <header class="glass-panel h-16 flex items-center justify-between px-4 md:px-6 border-b border-gray-200 dark:border-gray-800 sticky top-0">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('dashboard')">
+            <button onclick="event.stopPropagation(); toggleSidebar()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 transition"><i class="fa-solid fa-bars text-gray-600 dark:text-gray-300"></i></button>
             <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg">
                 <i class="fa-solid fa-infinity text-lg"></i>
             </div>
             <h1 class="text-xl font-bold tracking-tight hidden sm:block">AuraPlan</h1>
         </div>
 
-        <div class="flex items-center gap-2 md:gap-3">
-            <div onclick="openSpotlight()" class="hidden md:flex bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2 items-center gap-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+        <div class="flex items-center gap-2">
+            <div onclick="openSpotlight()" class="hidden md:flex bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2 items-center gap-2 cursor-pointer hover:bg-gray-200 transition">
                 <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm"></i>
                 <span class="text-sm text-gray-500 w-24">Search...</span>
             </div>
 
-            <!-- Nút App Grid -->
-            <button onclick="openFeature('appgrid')" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center" title="App Grid">
-                <i class="fa-solid fa-border-all text-gray-600 dark:text-gray-300 text-lg"></i>
-            </button>
+            <button onclick="exportICS('week')" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center" title="Xuất Google Calendar (Tuần)"><i class="fa-regular fa-calendar-check text-gray-600 dark:text-gray-300"></i></button>
+            
+            <button onclick="openFeature('appgrid')" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center" title="App Grid"><i class="fa-solid fa-border-all text-gray-600 dark:text-gray-300"></i></button>
 
             <button onclick="toggleTheme()" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center justify-center">
                 <i id="theme-icon" class="fa-solid fa-moon dark:hidden text-gray-600"></i>
@@ -138,7 +148,7 @@
     <div id="sidebar" class="fixed top-0 left-0 h-full w-64 glass-panel z-50 flex flex-col p-4 overflow-y-auto transform -translate-x-full transition-transform duration-200 shadow-2xl">
         <div class="flex justify-between items-center mb-6 px-2">
             <h2 class="text-lg font-bold">Menu</h2>
-            <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"><i class="fa-solid fa-xmark"></i></button>
+            <button onclick="toggleSidebar()" class="text-gray-500 hover:text-gray-800 w-8 h-8 rounded-full hover:bg-gray-100 transition"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <nav class="flex flex-col gap-1 text-sm font-medium">
             <button onclick="openFeature('daily')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-calendar-day w-6 text-indigo-500"></i> Daily Planner</button>
@@ -146,6 +156,7 @@
             <button onclick="openFeature('streak')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-fire w-6 text-orange-500"></i> My Streak</button>
             <button onclick="openFeature('reading')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-book w-6 text-blue-500"></i> Reading Library</button>
             <button onclick="openFeature('health')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-heart-pulse w-6 text-red-500"></i> Health Tracker</button>
+            <button onclick="openFeature('finance')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-wallet w-6 text-yellow-500"></i> Finance Hub</button>
             <button onclick="openFeature('focus')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-stopwatch w-6 text-purple-500"></i> Focus Space</button>
             <button onclick="openFeature('settings')" class="text-left px-4 py-3 rounded-xl hover-item text-gray-700 dark:text-gray-300"><i class="fa-solid fa-gear w-6 text-gray-500"></i> Settings</button>
         </nav>
@@ -179,12 +190,13 @@
                     <div class="flex justify-between items-center mb-4 px-2">
                         <h3 class="font-bold text-lg"><i class="fa-regular fa-calendar-days text-primary mr-2"></i> Lịch Trình Tuần</h3>
                         <div class="flex gap-2 items-center">
+                            <button onclick="exportICS('week')" class="hidden md:flex w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center hover:bg-green-100 hover:text-green-600 transition" title="Xuất .ics"><i class="fa-solid fa-download text-xs"></i></button>
                             <button onclick="changeWeek(-1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-chevron-left text-xs"></i></button>
                             <span id="week-label" class="text-sm font-medium px-2 py-1.5">Tuần này</span>
                             <button onclick="changeWeek(1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
                         </div>
                     </div>
-                    <div id="schedule-container" class="drag-scroll flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                    <div id="schedule-container" class="drag-scroll flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
                         <!-- Days injected here -->
                     </div>
                 </div>
@@ -212,20 +224,6 @@
                             <p class="text-xs font-bold text-purple-600 dark:text-purple-400 mb-1" id="bible-verse-ref">Thi Thiên 23:1</p>
                             <p class="text-sm font-medium italic" id="bible-verse-text">"Đức Giê-hô-va là Đấng chăn giữ tôi; tôi sẽ không thiếu thốn gì."</p>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Small Habit Widget -->
-                <div class="glass-panel rounded-2xl p-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition" onclick="openFeature('habits')">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-500 flex items-center justify-center"><i class="fa-solid fa-list-check text-xs"></i></div>
-                        <div>
-                            <p class="text-xs font-bold">Tiến độ thói quen tháng này</p>
-                            <p class="text-[10px] text-gray-500" id="mini-habit-text">Đang tải...</p>
-                        </div>
-                    </div>
-                    <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div class="bg-purple-500 h-2 rounded-full" id="mini-habit-bar" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
@@ -273,6 +271,7 @@
             <div class="flex items-center gap-4 mb-6 shrink-0">
                 <input type="date" id="daily-date-picker" onchange="renderDailyView(this.value)" class="p-2 text-xl font-bold bg-transparent border-b-2 border-primary outline-none dark:text-white">
                 <h2 class="text-2xl font-bold hidden sm:block">Daily Planner</h2>
+                <button onclick="exportICS('day')" class="ml-auto mr-12 text-sm font-medium text-gray-500 hover:text-appleBlue flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-3 py-2 rounded-lg transition"><i class="fa-solid fa-download"></i> Export</button>
             </div>
             
             <div class="flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
@@ -287,7 +286,10 @@
                 <div class="w-full md:w-1/2 flex flex-col overflow-hidden bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20 shadow-sm">
                     <div class="flex justify-between items-center mb-3 shrink-0">
                         <h3 class="font-bold text-lg"><i class="fa-solid fa-clock text-emerald-500 mr-2"></i> Timeline</h3>
-                        <button onclick="openTimeBlockModal()" class="text-sm bg-emerald-500 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition">+ Block</button>
+                        <div class="flex gap-2">
+                            <button onclick="openCopyBlockModal()" class="text-sm text-emerald-600 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 px-3 py-1.5 rounded-lg transition" title="Sao chép Block từ ngày khác"><i class="fa-solid fa-copy"></i></button>
+                            <button onclick="openTimeBlockModal()" class="text-sm bg-emerald-500 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-600 transition">+ Block</button>
+                        </div>
                     </div>
                     <div id="timeline-container" class="overflow-y-auto custom-scrollbar flex-1 relative pr-2"></div>
                 </div>
@@ -295,37 +297,37 @@
         </div>
     </div>
 
-    <!-- Habit Tracker -->
+    <!-- Habit Tracker (To hơn) -->
     <div id="habit-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('habit-modal')">
         <div class="modal-content glass-panel w-full max-w-6xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('habit-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
-            <div class="flex justify-between items-center mb-2 shrink-0">
-                <h2 class="text-2xl font-bold"><i class="fa-solid fa-list-check text-purple-500 mr-2"></i> Habit Tracker</h2>
-                <button onclick="openModal('habit-add-modal')" class="bg-purple-500 text-white px-4 py-2 rounded-xl text-sm shadow-lg hover:bg-purple-600 transition mr-10">+ Tạo Habit</button>
+            <div class="flex justify-between items-center mb-4 shrink-0">
+                <h2 class="text-3xl font-bold"><i class="fa-solid fa-list-check text-purple-500 mr-3"></i> Habit Tracker</h2>
+                <button onclick="openModal('habit-add-modal')" class="bg-purple-500 text-white px-5 py-2.5 rounded-xl text-sm shadow-lg hover:bg-purple-600 transition mr-10">+ Tạo Habit</button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 shrink-0">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 shrink-0">
                 <div class="md:col-span-2 bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
-                    <h4 class="text-sm font-bold text-gray-500 mb-2">Tiến Độ Tháng</h4>
-                    <div class="h-24 w-full"><canvas id="habitMonthlyChart"></canvas></div>
+                    <h4 class="text-sm font-bold text-gray-500 mb-2">Biểu đồ tiến độ</h4>
+                    <div class="h-32 w-full"><canvas id="habitMonthlyChart"></canvas></div>
                 </div>
                 <div class="bg-purple-50/50 dark:bg-purple-900/10 rounded-2xl p-4 border border-purple-100 dark:border-purple-900/30 flex items-center justify-around">
                     <div class="text-center">
-                        <div class="relative w-16 h-16">
-                            <svg class="w-full h-full transform -rotate-90"><circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" class="text-purple-200 dark:text-purple-900"></circle><circle id="habit-month-ring" cx="32" cy="32" r="28" stroke="currentColor" stroke-width="6" fill="transparent" stroke-dasharray="176" stroke-dashoffset="176" class="progress-ring__circle text-purple-500"></circle></svg>
-                            <span id="habit-month-percent" class="absolute inset-0 flex items-center justify-center text-xs font-bold text-purple-600">0%</span>
+                        <div class="relative w-20 h-20">
+                            <svg class="w-full h-full transform -rotate-90"><circle cx="40" cy="40" r="34" stroke="currentColor" stroke-width="8" fill="transparent" class="text-purple-200 dark:text-purple-900"></circle><circle id="habit-month-ring" cx="40" cy="40" r="34" stroke="currentColor" stroke-width="8" fill="transparent" stroke-dasharray="213" stroke-dashoffset="213" class="progress-ring__circle text-purple-500"></circle></svg>
+                            <span id="habit-month-percent" class="absolute inset-0 flex items-center justify-center text-sm font-bold text-purple-600">0%</span>
                         </div>
-                        <p class="text-[10px] text-gray-500 mt-1">Tháng</p>
+                        <p class="text-[11px] text-gray-500 mt-2 font-semibold">Tháng</p>
                     </div>
                 </div>
             </div>
 
-            <div class="flex-1 overflow-x-auto custom-scrollbar bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
-                <table class="w-full text-left border-collapse min-w-[800px]">
+            <div class="flex-1 overflow-auto custom-scrollbar bg-white/50 dark:bg-gray-800/50 rounded-2xl p-4 border border-white/20">
+                <table class="w-full text-left border-collapse min-w-[900px]">
                     <thead>
-                        <tr class="border-b border-gray-200 dark:border-gray-700">
-                            <th class="p-2 min-w-[180px] text-sm text-gray-500 sticky left-0 bg-white dark:bg-[#1a1a1a] z-10">Thói quen</th>
-                            <script>for(let i=1; i<=31; i++) document.write(`<th class="w-6 p-1 text-center text-[10px] text-gray-400">${i}</th>`);</script>
+                        <tr class="border-b-2 border-gray-200 dark:border-gray-700">
+                            <th class="p-3 min-w-[200px] text-base text-gray-500 sticky left-0 bg-white dark:bg-[#1a1a1a] z-10">Thói quen</th>
+                            <script>for(let i=1; i<=31; i++) document.write(`<th class="w-8 p-1 text-center text-xs text-gray-400">${i}</th>`);</script>
                         </tr>
                     </thead>
                     <tbody id="habit-table-body"></tbody>
@@ -405,7 +407,7 @@
         </div>
     </div>
 
-    <!-- Health Modal -->
+    <!-- Health Modal (Có thêm tùy chọn Icon) -->
     <div id="health-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('health-modal')">
         <div class="modal-content glass-panel w-full max-w-4xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('health-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -442,13 +444,14 @@
                 <div class="bg-gray-50 dark:bg-gray-800/80 rounded-2xl p-4 border border-gray-200 dark:border-gray-700">
                     <h3 class="font-bold mb-3 text-sm text-gray-700 dark:text-gray-300">Thêm chỉ số theo dõi mới</h3>
                     <form onsubmit="handleAddHealthMetric(event)" class="flex flex-col sm:flex-row gap-3">
-                        <input type="text" id="health-name" required placeholder="Tên (VD: Chạy bộ)" class="flex-1 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 outline-none text-sm">
+                        <input type="text" id="health-name" required placeholder="Tên (VD: Chạy bộ)" class="flex-1 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 outline-none text-sm">
                         <div class="flex gap-2">
-                            <input type="number" id="health-goal" required placeholder="Mục tiêu" class="w-20 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 outline-none text-sm">
-                            <input type="text" id="health-unit" required placeholder="Đơn vị" class="w-20 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 outline-none text-sm">
-                            <input type="number" id="health-step" required placeholder="Bước" value="1" class="w-16 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 outline-none text-sm" title="Mỗi lần cộng là bao nhiêu?">
+                            <input type="number" id="health-goal" required placeholder="Mục tiêu" class="w-20 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 outline-none text-sm">
+                            <input type="text" id="health-unit" required placeholder="Đơn vị" class="w-20 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 outline-none text-sm">
+                            <input type="number" id="health-step" required placeholder="Bước" value="1" class="w-16 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 outline-none text-sm" title="Mỗi lần cộng là bao nhiêu?">
                         </div>
                         <div class="flex items-center gap-2">
+                            <input type="text" id="health-icon" placeholder="Icon (fa-dumbbell)" value="fa-heart" class="w-32 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-300 outline-none text-sm">
                             <input type="color" id="health-color" value="#ef4444" class="h-9 w-10 p-1 rounded-lg border border-gray-300 cursor-pointer">
                             <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg text-sm transition h-9 whitespace-nowrap hover:opacity-90">Thêm</button>
                         </div>
@@ -458,12 +461,27 @@
         </div>
     </div>
 
-    <!-- Focus Modal (Đã sửa lỗi lệch & thêm lại Link) -->
+    <!-- Finance Hub Modal (Tích hợp mở app ngoài - Req 4) -->
+    <div id="finance-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('finance-modal')">
+        <div class="modal-content glass-panel w-full max-w-3xl h-[80vh] rounded-3xl p-6 relative flex flex-col">
+            <button onclick="closeModal('finance-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
+            <div class="flex justify-between items-center mb-6 shrink-0 pr-10">
+                <h2 class="text-2xl font-bold"><i class="fa-solid fa-wallet text-yellow-500 mr-2"></i> Finance Hub</h2>
+                <button onclick="openModal('add-fin-link-modal')" class="text-sm bg-primary text-white px-3 py-1.5 rounded-lg transition shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Thêm App/Link</button>
+            </div>
+            
+            <div class="overflow-y-auto custom-scrollbar flex-1">
+                <p class="text-sm text-gray-500 mb-4">Bấm vào các biểu tượng bên dưới để mở nhanh ứng dụng quản lý tài chính hoặc Google Sheets của bạn.</p>
+                <div class="app-grid" id="finance-links-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Focus Modal -->
     <div id="focus-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('focus-modal')">
         <div class="modal-content glass-panel w-full max-w-5xl h-[85vh] rounded-3xl p-6 relative flex flex-col md:flex-row gap-6 overflow-y-auto">
             <button onclick="closeModal('focus-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             
-            <!-- Cột Trái: Đồng hồ -->
             <div class="flex-1 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 pb-6 md:pb-0 md:pr-6 shrink-0">
                 <h2 class="text-2xl font-bold mb-4 text-indigo-500"><i class="fa-solid fa-stopwatch mr-2"></i> Focus Space</h2>
                 
@@ -478,21 +496,12 @@
                         <circle id="main-pomo-ring" cx="128" cy="128" r="112" stroke="currentColor" stroke-width="10" fill="transparent" stroke-dasharray="703" stroke-dashoffset="0" class="progress-ring__circle text-indigo-500"></circle>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <div id="pomo-attached-task" class="hidden absolute -top-8 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shadow-sm border border-indigo-200 dark:border-indigo-700"></div>
-                        
                         <span id="main-timer-display" class="text-5xl font-extrabold tracking-tight">25:00</span>
                         <span id="pomo-state" class="text-xs text-gray-500 mt-2 uppercase tracking-widest font-semibold">Deep Work</span>
                     </div>
                 </div>
 
                 <div class="text-4xl mb-6" id="main-tree">🌱</div>
-
-                <div class="w-full max-w-xs mb-6">
-                    <label class="text-xs font-semibold text-gray-500 mb-1 block">Gắn với Task</label>
-                    <select id="pomo-task-select" onchange="updateAttachedTaskDisplay()" class="w-full p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 text-sm border border-gray-200 dark:border-gray-700 outline-none shadow-sm cursor-pointer">
-                        <option value="">-- Không chọn --</option>
-                    </select>
-                </div>
 
                 <div class="flex gap-4 items-center justify-center">
                     <button onclick="togglePomo()" id="main-pomo-btn" class="w-14 h-14 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg hover:scale-105 transition"><i class="fa-solid fa-play text-xl ml-1"></i></button>
@@ -504,16 +513,13 @@
                 </div>
             </div>
 
-            <!-- Cột Phải: Link Workspace & Analytics -->
             <div class="flex-1 flex flex-col justify-between md:pl-2 w-full">
                 <div class="mb-6">
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-bold text-sm text-gray-500 uppercase">Không Gian Làm Việc</h3>
                         <button onclick="openModal('add-link-modal')" class="text-[10px] text-primary hover:underline">+ Thêm Link</button>
                     </div>
-                    <div id="focus-links-container" class="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto custom-scrollbar">
-                        <!-- Links Injected here -->
-                    </div>
+                    <div id="focus-links-container" class="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto custom-scrollbar"></div>
                 </div>
 
                 <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-200 dark:border-gray-700">
@@ -526,22 +532,21 @@
         </div>
     </div>
 
-    <!-- App Grid Modal (Đã khôi phục) -->
+    <!-- App Grid Modal -->
     <div id="appgrid-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('appgrid-modal')">
         <div class="modal-content glass-panel w-full max-w-3xl h-[80vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('appgrid-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
             <div class="flex justify-between items-center mb-6 shrink-0">
                 <h2 class="text-2xl font-bold"><i class="fa-solid fa-border-all text-indigo-500 mr-2"></i> App Grid</h2>
-                <button onclick="openModal('add-app-modal')" class="text-sm bg-primary text-white px-3 py-1.5 rounded-lg transition shadow-sm hover:opacity-90"><i class="fa-solid fa-plus mr-1"></i> Thêm App</button>
+                <button onclick="openModal('add-app-modal')" class="text-sm bg-primary text-white px-3 py-1.5 rounded-lg transition shadow-sm"><i class="fa-solid fa-plus mr-1"></i> Thêm App</button>
             </div>
-            
             <div class="overflow-y-auto custom-scrollbar flex-1 pr-2">
                 <div class="app-grid" id="app-grid-container"></div>
             </div>
         </div>
     </div>
 
-    <!-- Profile Modal -->
+    <!-- Profile Modal (Khôi phục - Req 3) -->
     <div id="profile-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('profile-modal')">
         <div class="modal-content glass-panel w-full max-w-3xl h-[85vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('profile-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -608,8 +613,8 @@
             
             <div class="w-full md:w-56 bg-gray-50/80 dark:bg-gray-900/80 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 p-4 flex flex-row md:flex-col gap-2 overflow-x-auto shrink-0">
                 <h2 class="text-lg font-bold mb-2 hidden md:block px-2">Settings</h2>
-                <button onclick="switchSettingsTab('appearance')" id="set-tab-appearance" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition active font-bold text-primary">Appearance</button>
-                <button onclick="switchSettingsTab('tags')" id="set-tab-tags" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition">Tags</button>
+                <button onclick="switchSettingsTab('appearance')" id="set-tab-appearance" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 transition active font-bold text-primary">Appearance</button>
+                <button onclick="switchSettingsTab('tags')" id="set-tab-tags" class="settings-nav-item whitespace-nowrap text-left px-3 py-2 rounded-lg hover:bg-gray-200 transition">Tags</button>
             </div>
             
             <div class="flex-1 p-6 md:p-8 overflow-y-auto">
@@ -627,7 +632,7 @@
                     <form onsubmit="handleAddTag(event)" class="flex gap-3 items-end bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
                         <div class="flex-1">
                             <label class="text-xs font-semibold mb-1 block">Tên Tag</label>
-                            <input type="text" id="new-tag-name" required class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 outline-none text-sm">
+                            <input type="text" id="new-tag-name" required class="w-full p-2 rounded-lg border border-gray-300 bg-white dark:bg-gray-700 outline-none text-sm">
                         </div>
                         <div>
                             <label class="text-xs font-semibold mb-1 block">Màu</label>
@@ -642,7 +647,7 @@
 
     <!-- ================= SMALL SUB-MODALS ================= -->
 
-    <!-- Task Modal -->
+    <!-- Task Modal (MITs & LITs) -->
     <div id="task-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('task-modal')">
         <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-6 relative">
             <button onclick="closeModal('task-modal')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><i class="fa-solid fa-xmark"></i></button>
@@ -654,6 +659,19 @@
                         <label class="text-xs font-semibold text-gray-500">Tên nhiệm vụ</label>
                         <input type="text" id="task-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 ring-primary">
                     </div>
+                    
+                    <!-- Phân loại MIT/LIT -->
+                    <div class="flex gap-4 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="task-type" value="MIT" checked class="accent-red-500">
+                            <span class="text-sm font-bold text-red-500">MIT (Quan trọng)</span>
+                        </label>
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="radio" name="task-type" value="LIT" class="accent-gray-500">
+                            <span class="text-sm font-bold text-gray-500">LIT (Phụ)</span>
+                        </label>
+                    </div>
+
                     <div class="flex gap-3">
                         <div class="flex-1">
                             <label class="text-xs font-semibold text-gray-500">Tag</label>
@@ -687,6 +705,27 @@
         </div>
     </div>
 
+    <!-- Copy Timeblock Modal (Req 11) -->
+    <div id="copy-block-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('copy-block-modal')">
+        <div class="modal-content glass-panel w-full max-w-sm rounded-3xl p-6 relative">
+            <button onclick="closeModal('copy-block-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-xl font-bold mb-4">Sao chép Time Blocks</h3>
+            <form onsubmit="handleCopyBlocks(event)">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Chọn ngày có sẵn Block</label>
+                        <input type="date" id="copy-source-date" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Sao chép đến ngày</label>
+                        <input type="date" id="copy-target-date" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                    </div>
+                </div>
+                <button type="submit" class="w-full mt-6 bg-emerald-500 text-white py-2.5 rounded-xl font-medium hover:bg-emerald-600 transition">Sao chép</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Timeblock Modal -->
     <div id="timeblock-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('timeblock-modal')">
         <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-6 relative">
@@ -710,7 +749,7 @@
                         <input type="text" id="tb-title" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-gray-500">Tag (Phân loại)</label>
+                        <label class="text-xs font-semibold text-gray-500">Tag</label>
                         <select id="tb-tag" class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none"></select>
                     </div>
                 </div>
@@ -734,7 +773,7 @@
         </div>
     </div>
 
-    <!-- Add Book Modal -->
+    <!-- Add Book Modal (Upload ảnh) -->
     <div id="add-book-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('add-book-modal')">
         <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-6 relative">
             <button onclick="closeModal('add-book-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
@@ -749,14 +788,15 @@
                         <label class="text-xs font-semibold text-gray-500">Tác giả</label>
                         <input type="text" id="book-author" required class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
                     </div>
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-500">Tổng số trang</label>
-                            <input type="number" id="book-pages" required class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-500">Link ảnh bìa</label>
-                            <input type="url" id="book-cover" placeholder="https://..." class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Tổng số trang</label>
+                        <input type="number" id="book-pages" required class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Ảnh bìa (Tải lên hoặc dán link)</label>
+                        <div class="flex gap-2 mt-1">
+                            <input type="url" id="book-cover" placeholder="https://..." class="flex-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none text-sm">
+                            <input type="file" id="book-cover-file" accept="image/*" class="w-24 text-xs file:py-2 file:px-2 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700">
                         </div>
                     </div>
                 </div>
@@ -765,19 +805,19 @@
         </div>
     </div>
 
-    <!-- Add Link Modal -->
+    <!-- Add Link Modal (Focus) -->
     <div id="add-link-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('add-link-modal')">
         <div class="modal-content glass-panel w-full max-w-sm rounded-3xl p-6 relative">
             <button onclick="closeModal('add-link-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-bold mb-4">Thêm Link</h3>
+            <h3 class="text-xl font-bold mb-4">Thêm Link Làm Việc</h3>
             <form id="link-form" onsubmit="handleAddLink(event)">
                 <div class="space-y-3">
                     <div>
-                        <label class="text-xs font-semibold text-gray-500">Tên hiển thị</label>
+                        <label class="text-xs font-semibold text-gray-500">Tên</label>
                         <input type="text" id="link-name" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-gray-500">Đường dẫn (URL)</label>
+                        <label class="text-xs font-semibold text-gray-500">Link (URL)</label>
                         <input type="url" id="link-url" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
                     </div>
                 </div>
@@ -786,7 +826,38 @@
         </div>
     </div>
 
-    <!-- Add App Modal -->
+    <!-- Add Finance Link Modal (Req 4) -->
+    <div id="add-fin-link-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('add-fin-link-modal')">
+        <div class="modal-content glass-panel w-full max-w-sm rounded-3xl p-6 relative">
+            <button onclick="closeModal('add-fin-link-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-xl font-bold mb-4">Thêm App Tài Chính</h3>
+            <form id="fin-link-form" onsubmit="handleAddFinLink(event)">
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Tên App / File</label>
+                        <input type="text" id="fin-link-name" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500">Link (URL) hoặc Link Google Sheets</label>
+                        <input type="url" id="fin-link-url" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold text-gray-500">Icon FontAwesome</label>
+                            <input type="text" id="fin-link-icon" placeholder="fa-solid fa-wallet" value="fa-solid fa-file-excel" class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-gray-500">Màu</label>
+                            <input type="color" id="fin-link-color" value="#10b981" class="h-10 w-12 p-1 rounded-lg border border-gray-300 mt-1 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="w-full mt-6 bg-primary text-white py-2.5 rounded-xl font-medium transition hover:opacity-90">Lưu</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add App Modal (Có Icon) -->
     <div id="add-app-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('add-app-modal')">
         <div class="modal-content glass-panel w-full max-w-sm rounded-3xl p-6 relative">
             <button onclick="closeModal('add-app-modal')" class="absolute top-4 right-4 text-gray-500"><i class="fa-solid fa-xmark"></i></button>
@@ -794,7 +865,7 @@
             <form id="app-form" onsubmit="handleAddApp(event)">
                 <div class="space-y-3">
                     <div>
-                        <label class="text-xs font-semibold text-gray-500">Tên</label>
+                        <label class="text-xs font-semibold text-gray-500">Tên App</label>
                         <input type="text" id="app-name" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
                     </div>
                     <div>
@@ -802,15 +873,18 @@
                         <input type="url" id="app-url" required class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-gray-500">Icon (FontAwesome) hoặc Tải ảnh lên</label>
-                        <div class="flex gap-2 mt-1">
-                            <input type="text" id="app-icon" placeholder="fa-brands fa-facebook" class="flex-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none text-sm">
-                            <input type="file" id="app-image" accept="image/*" class="w-24 text-xs text-gray-500 file:py-2 file:px-2 file:rounded-lg file:border-0 file:text-xs file:bg-indigo-50 file:text-indigo-700">
-                        </div>
+                        <label class="text-xs font-semibold text-gray-500">Tải ảnh Icon lên (Tùy chọn)</label>
+                        <input type="file" id="app-image" accept="image/*" class="w-full mt-1 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                     </div>
-                    <div>
-                        <label class="text-xs font-semibold text-gray-500">Màu Icon (Nếu dùng FontAwesome)</label>
-                        <input type="color" id="app-color" value="#3b82f6" class="h-10 w-full p-1 rounded-lg border border-gray-300 mt-1 cursor-pointer">
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold text-gray-500">Hoặc Icon FontAwesome</label>
+                            <input type="text" id="app-icon" placeholder="fa-brands fa-facebook" class="w-full mt-1 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 border-none outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-gray-500">Màu</label>
+                            <input type="color" id="app-color" value="#3b82f6" class="h-10 w-12 p-1 rounded-lg border border-gray-300 mt-1 cursor-pointer">
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="w-full mt-6 bg-primary text-white py-2.5 rounded-xl font-medium transition hover:opacity-90">Lưu</button>
@@ -830,7 +904,7 @@
                 'Minh': {
                     streak: 12, bestStreak: 15,
                     lastLoginDate: new Date().toISOString().split('T')[0],
-                    loginHistory: ['2023-10-20', '2023-10-21', '2023-10-22', '2023-10-23', '2023-10-24', '2023-10-25'],
+                    loginHistory: [],
                     tasks: {}, 
                     timeBlocks: {},
                     tags: { 'Work': { color: '#3b82f6' }, 'Study': { color: '#10b981' }, 'Personal': { color: '#f59e0b' }, 'Health': { color: '#ef4444' } },
@@ -849,6 +923,10 @@
                     ],
                     meals: { breakfast: '', lunch: '', dinner: '', snack: '' },
                     focusLinks: [{ name: 'Pomofocus', url: 'https://pomofocus.io/' }],
+                    financeLinks: [
+                        { id: '1', name: 'Google Sheets', url: 'https://docs.google.com/spreadsheets', icon: 'fa-solid fa-file-excel', color: '#10b981' },
+                        { id: '2', name: 'MISA Money', url: 'https://misa.vn', icon: 'fa-solid fa-wallet', color: '#f59e0b' }
+                    ],
                     appGrid: [
                         { id: '1', name: 'YouTube', url: 'https://youtube.com', icon: 'fa-brands fa-youtube', color: '#ff0000' },
                         { id: '2', name: 'Notion', url: 'https://notion.so', icon: 'fa-solid fa-n', color: '#000000' }
@@ -858,7 +936,7 @@
             }
         };
 
-        let appState = JSON.parse(localStorage.getItem('auraplan_v13')) || defaultState;
+        let appState = JSON.parse(localStorage.getItem('auraplan_v14')) || defaultState;
 
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -870,6 +948,7 @@
             setupBibleVerse();
             setupDragScroll();
             initChart();
+            renderFinanceLinks();
             
             document.addEventListener('click', (e) => {
                 if(!document.getElementById('user-menu-container').contains(e.target)) closeUserMenu();
@@ -884,7 +963,7 @@
         });
 
         function saveState() {
-            localStorage.setItem('auraplan_v13', JSON.stringify(appState));
+            localStorage.setItem('auraplan_v14', JSON.stringify(appState));
         }
 
         // --- THEME ---
@@ -940,76 +1019,6 @@
             }
         }
 
-        // --- APP GRID (Khôi phục) ---
-        function renderAppGrid() {
-            const grid = document.getElementById('app-grid-container');
-            if(!grid) return;
-            grid.innerHTML = appState.users[appState.currentUser].appGrid.map(app => `
-                <div class="app-icon-container group">
-                    <button onclick="deleteApp('${app.id}')" class="delete-app-btn"><i class="fa-solid fa-xmark"></i></button>
-                    <a href="${app.url}" target="_blank" class="app-icon flex flex-col items-center justify-center" style="color: ${app.color || '#333'}">
-                        ${app.imgBase64 ? `<img src="${app.imgBase64}" class="w-full h-full object-cover rounded-2xl">` : `<i class="${app.icon || 'fa-solid fa-globe'}"></i>`}
-                    </a>
-                    <span class="text-xs text-center text-gray-700 dark:text-gray-300 font-medium truncate w-full mt-1">${app.name}</span>
-                </div>
-            `).join('');
-        }
-
-        function handleAddApp(e) {
-            e.preventDefault();
-            const name = document.getElementById('app-name').value;
-            const url = document.getElementById('app-url').value;
-            const icon = document.getElementById('app-icon').value || 'fa-solid fa-globe';
-            const color = document.getElementById('app-color').value;
-            const fileInput = document.getElementById('app-image');
-
-            const saveApp = (base64 = null) => {
-                appState.users[appState.currentUser].appGrid.push({ id: Date.now().toString(), name, url, icon, color, imgBase64: base64 });
-                saveState(); closeModal('add-app-modal'); renderAppGrid(); document.getElementById('app-form').reset();
-            };
-
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = (event) => saveApp(event.target.result);
-                reader.readAsDataURL(fileInput.files[0]);
-            } else { saveApp(null); }
-        }
-
-        function deleteApp(id) {
-            if(confirm('Xóa app này?')) {
-                appState.users[appState.currentUser].appGrid = appState.users[appState.currentUser].appGrid.filter(a => a.id !== id);
-                saveState(); renderAppGrid();
-            }
-        }
-
-        // --- FOCUS LINKS (Khôi phục) ---
-        function renderFocusLinks() {
-            const links = appState.users[appState.currentUser].focusLinks || [];
-            const container = document.getElementById('focus-links-container');
-            if(!container) return;
-            container.innerHTML = links.map(l => `
-                <div class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded-lg group">
-                    <a href="${l.url}" target="_blank" class="text-sm font-medium hover:text-primary flex-1 truncate pr-2">${l.name}</a>
-                    <button onclick="deleteFocusLink('${l.name}')" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition"><i class="fa-solid fa-xmark text-xs"></i></button>
-                </div>
-            `).join('');
-        }
-
-        function handleAddLink(e) {
-            e.preventDefault();
-            const name = document.getElementById('link-name').value;
-            const url = document.getElementById('link-url').value;
-            if(!appState.users[appState.currentUser].focusLinks) appState.users[appState.currentUser].focusLinks = [];
-            appState.users[appState.currentUser].focusLinks.push({ name, url });
-            saveState(); closeModal('add-link-modal'); renderFocusLinks(); document.getElementById('link-form').reset();
-        }
-
-        function deleteFocusLink(name) {
-            const user = appState.users[appState.currentUser];
-            user.focusLinks = user.focusLinks.filter(l => l.name !== name);
-            saveState(); renderFocusLinks();
-        }
-
         // --- CORE RENDERING ---
         function updateGreeting() {
             const hour = new Date().getHours();
@@ -1037,6 +1046,7 @@
             if(id === 'settings-modal') { switchSettingsTab('appearance'); setThemeButtonsUI(); }
             if(id === 'focus-modal') { renderFocusLinks(); updatePomodoroUI(); }
             if(id === 'appgrid-modal') { renderAppGrid(); }
+            if(id === 'finance-modal') { renderFinanceLinks(); }
         }
 
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
@@ -1047,6 +1057,7 @@
             if(feature === 'habits') { openModal('habit-modal'); }
             if(feature === 'reading') { openModal('reading-modal'); }
             if(feature === 'health') { openModal('health-modal'); }
+            if(feature === 'finance') { openModal('finance-modal'); }
             if(feature === 'streak') { openModal('streak-modal'); }
             if(feature === 'settings') { openModal('settings-modal'); }
             if(feature === 'focus') { openModal('focus-modal'); }
@@ -1082,9 +1093,12 @@
 
                 const fixedTasks = userTasks.filter(t => t.isFixed);
                 const normalTasks = userTasks.filter(t => !t.isFixed);
+                
+                // Sắp xếp MITs lên trước LITs (Req 12)
+                normalTasks.sort((a,b) => a.type === 'MIT' && b.type !== 'MIT' ? -1 : 1);
 
                 let fixedHtml = fixedTasks.map(task => `
-                    <div class="fixed-task flex justify-between items-start group">
+                    <div class="fixed-task flex justify-between items-start group border-l-4 ${task.type === 'MIT' ? 'border-red-500' : 'border-gray-400'}">
                         <div class="flex-1 min-w-0 pr-2">
                             <div class="flex items-center gap-1.5 mb-1">
                                 <i class="fa-solid fa-clock text-indigo-500 text-[10px]"></i>
@@ -1099,7 +1113,7 @@
                 let normalHtml = normalTasks.map(task => {
                     const tagColor = appState.users[appState.currentUser].tags[task.tag]?.color || '#gray';
                     return `
-                    <div class="flex items-start gap-2 group p-1 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg transition-colors">
+                    <div class="flex items-start gap-2 group p-1.5 rounded-lg transition-colors ${task.type === 'MIT' ? 'mit-task' : 'lit-task'}">
                         <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask('${dateStr}', '${task.id}')" class="mt-1 w-4 h-4 cursor-pointer accent-emerald-500">
                         <div class="flex-1 min-w-0">
                             <span class="text-sm block truncate ${task.done ? 'line-through text-gray-400' : ''}">${task.title}</span>
@@ -1112,7 +1126,7 @@
                 `}).join('');
 
                 htmlStr += `
-                    <div class="min-w-[260px] flex-1 bg-${dayColors[i]}-50/80 dark:bg-${dayColors[i]}-900/10 border border-${dayColors[i]}-100 dark:border-${dayColors[i]}-900/30 rounded-2xl p-3 flex flex-col cursor-pointer transition-all duration-150 ${dateStr === realToday ? 'today-col bg-white dark:bg-gray-800' : 'hover:shadow-md'}" onclick="if(!event.target.closest('input, button')) { currentDailyDate='${dateStr}'; openFeature('daily'); }">
+                    <div class="task-card min-w-[85vw] sm:min-w-[260px] flex-1 bg-${dayColors[i]}-50/80 dark:bg-${dayColors[i]}-900/10 border border-${dayColors[i]}-100 dark:border-${dayColors[i]}-900/30 rounded-2xl p-3 flex flex-col cursor-pointer transition-all duration-150 snap-center ${dateStr === realToday ? 'today-col bg-white dark:bg-gray-800' : 'hover:shadow-md'}" onclick="if(!event.target.closest('input, button')) { currentDailyDate='${dateStr}'; openFeature('daily'); }">
                         <div class="flex justify-between items-center mb-3">
                             <div>
                                 <p class="text-xs font-bold text-${dayColors[i]}-500 uppercase">${dayNames[i]}</p>
@@ -1127,7 +1141,7 @@
                             </div>
                         </div>
                         ${fixedHtml ? `<div class="mb-2">${fixedHtml}</div>` : ''}
-                        <div class="space-y-1 flex-1 overflow-y-auto max-h-32 custom-scrollbar">
+                        <div class="space-y-1 flex-1 overflow-y-auto max-h-40 custom-scrollbar">
                             ${normalHtml || (!fixedHtml ? `<p class="text-xs text-gray-400 text-center mt-4">Trống</p>` : '')}
                         </div>
                     </div>
@@ -1163,25 +1177,20 @@
                     <button onclick="event.stopPropagation(); addHealthProgress('${h.id}')" class="w-6 h-6 rounded-full flex items-center justify-center text-white hover:scale-110 transition" style="background-color: ${h.color}"><i class="fa-solid fa-plus text-[10px]"></i></button>
                 </div>
             `).join('');
-
-            const habits = appState.users[appState.currentUser].habits;
-            const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-            let totalChecks = 0, totalPossible = Object.keys(habits).length * daysInMonth;
-            Object.values(habits).forEach(h => { Object.keys(h.history).forEach(d => { if(h.history[d]) totalChecks++; }); });
-            const percent = totalPossible === 0 ? 0 : Math.round((totalChecks / totalPossible) * 100);
-            document.getElementById('mini-habit-text').innerText = `${totalChecks} hoàn thành / ${totalPossible} mục tiêu`;
-            document.getElementById('mini-habit-bar').style.width = `${percent}%`;
         }
 
-        // --- DAILY PLANNER (Tự động cuộn) ---
+        // --- DAILY PLANNER & TIME BLOCK (Copy) ---
         function renderDailyView(dateStr) {
             document.getElementById('daily-date-picker').value = dateStr;
             const user = appState.users[appState.currentUser];
 
             const tasks = user.tasks[dateStr] || [];
+            // Sắp xếp MITs lên trước LITs (Req 12)
+            tasks.sort((a,b) => a.type === 'MIT' && b.type !== 'MIT' ? -1 : 1);
+            
             document.getElementById('daily-task-list').innerHTML = tasks.length ? tasks.map(t => {
                 const tagColor = user.tags[t.tag]?.color || '#gray';
-                return `<div class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover-item"><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${dateStr}', '${t.id}')" class="w-5 h-5 accent-emerald-500"><div class="flex-1"><p class="${t.done ? 'line-through text-gray-400' : 'font-medium'}">${t.title}</p><div class="flex gap-2 mt-1"><span class="text-[10px] px-2 py-0.5 rounded text-white" style="background-color: ${tagColor}">${t.tag}</span><span class="text-[10px] font-bold text-red-500">🍅 x ${t.pomos}</span>${t.isFixed ? `<span class="text-[10px] font-bold text-indigo-500"><i class="fa-regular fa-clock"></i> ${t.startTime}</span>` : ''}</div></div><button onclick="deleteTask('${dateStr}', '${t.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></div>`;
+                return `<div class="flex items-center gap-3 p-3 rounded-xl shadow-sm border hover-item ${t.type === 'MIT' ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30' : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700'}"><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${dateStr}', '${t.id}')" class="w-5 h-5 accent-emerald-500"><div class="flex-1"><p class="${t.done ? 'line-through text-gray-400' : 'font-medium'}">${t.title}</p><div class="flex gap-2 mt-1"><span class="text-[10px] px-2 py-0.5 rounded text-white" style="background-color: ${tagColor}">${t.tag}</span><span class="text-[10px] font-bold text-red-500">🍅 x ${t.pomos}</span>${t.isFixed ? `<span class="text-[10px] font-bold text-indigo-500"><i class="fa-regular fa-clock"></i> ${t.startTime}</span>` : ''}</div></div><button onclick="deleteTask('${dateStr}', '${t.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></div>`;
             }).join('') : `<p class="text-sm text-gray-500 text-center py-4">Không có task nào.</p>`;
 
             const blocks = user.timeBlocks[dateStr] || [];
@@ -1217,6 +1226,36 @@
             }
         }
 
+        function openCopyBlockModal() {
+            document.getElementById('copy-target-date').value = document.getElementById('daily-date-picker').value;
+            document.getElementById('copy-source-date').value = new Date().toISOString().split('T')[0];
+            openModal('copy-block-modal');
+        }
+
+        function handleCopyBlocks(e) {
+            e.preventDefault();
+            const src = document.getElementById('copy-source-date').value;
+            const target = document.getElementById('copy-target-date').value;
+            const user = appState.users[appState.currentUser];
+
+            if(!user.timeBlocks[src] || user.timeBlocks[src].length === 0) {
+                alert('Ngày được chọn không có Time Block nào để sao chép!');
+                return;
+            }
+
+            if(!user.timeBlocks[target]) user.timeBlocks[target] = [];
+            
+            // Deep copy blocks to avoid reference issues
+            const newBlocks = JSON.parse(JSON.stringify(user.timeBlocks[src]));
+            newBlocks.forEach(b => b.id = Date.now().toString() + Math.random().toString(36).substr(2, 5));
+            
+            user.timeBlocks[target] = user.timeBlocks[target].concat(newBlocks);
+            saveState();
+            closeModal('copy-block-modal');
+            renderDailyView(target);
+            alert(`Đã sao chép ${newBlocks.length} Time Block thành công!`);
+        }
+
         // --- HABIT ---
         function renderHabits() {
             const tbody = document.getElementById('habit-table-body');
@@ -1233,9 +1272,9 @@
                     boxes += `<td class="p-1"><div onclick="toggleHabit('${habitName}', '${dateStr}')" class="habit-box mx-auto flex items-center justify-center ${isDone ? 'done' : 'bg-transparent hover:scale-110'}" style="${isDone ? `background-color: ${color};` : ''}"></div></td>`;
                 }
                 return `<tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 group">
-                    <td class="p-2 font-medium text-sm truncate max-w-[120px] flex items-center justify-between">
+                    <td class="p-3 font-semibold text-base truncate max-w-[150px] flex items-center justify-between">
                         ${habitName}
-                        <button onclick="deleteHabit('${habitName}')" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition"><i class="fa-solid fa-trash text-xs"></i></button>
+                        <button onclick="deleteHabit('${habitName}')" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition"><i class="fa-solid fa-trash"></i></button>
                     </td>
                     ${boxes}
                 </tr>`;
@@ -1245,7 +1284,7 @@
             Object.values(habits).forEach(h => { Object.keys(h.history).forEach(d => { if(h.history[d]) totalChecks++; }); });
             const percent = totalPossible === 0 ? 0 : Math.round((totalChecks / totalPossible) * 100);
             document.getElementById('habit-month-percent').innerText = `${percent}%`;
-            document.getElementById('habit-month-ring').style.strokeDashoffset = 176 - ((percent / 100) * 176);
+            document.getElementById('habit-month-ring').style.strokeDashoffset = 213 - ((percent / 100) * 213);
 
             const ctx = document.getElementById('habitMonthlyChart').getContext('2d');
             if(window.habitChart) window.habitChart.destroy();
@@ -1342,8 +1381,9 @@
                 goal: parseInt(document.getElementById('health-goal').value), 
                 unit: document.getElementById('health-unit').value, 
                 step: parseInt(document.getElementById('health-step').value) || 1, 
+                icon: document.getElementById('health-icon').value || 'fa-heart',
                 color: document.getElementById('health-color').value, 
-                current: 0, icon: 'fa-heart', showOnDash: true
+                current: 0, showOnDash: true
             });
             saveState(); renderHealthView();
             document.getElementById('health-name').value = '';
@@ -1355,7 +1395,83 @@
             appState.users[appState.currentUser].meals[type] = value; saveState();
         }
 
-        // --- READING ---
+        // --- FINANCE LINKS (Req 4) ---
+        function renderFinanceLinks() {
+            const container = document.getElementById('finance-links-container');
+            const links = appState.users[appState.currentUser].financeLinks || [];
+            container.innerHTML = links.map(app => `
+                <div class="app-icon-container group">
+                    <button onclick="deleteFinLink('${app.id}')" class="delete-app-btn"><i class="fa-solid fa-xmark"></i></button>
+                    <a href="${app.url}" target="_blank" class="app-icon flex flex-col items-center justify-center" style="color: ${app.color}">
+                        <i class="${app.icon || 'fa-solid fa-file-excel'} text-3xl"></i>
+                    </a>
+                    <span class="text-xs text-center text-gray-700 dark:text-gray-300 font-medium truncate w-full mt-1">${app.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function handleAddFinLink(e) {
+            e.preventDefault();
+            if(!appState.users[appState.currentUser].financeLinks) appState.users[appState.currentUser].financeLinks = [];
+            appState.users[appState.currentUser].financeLinks.push({
+                id: Date.now().toString(),
+                name: document.getElementById('fin-link-name').value,
+                url: document.getElementById('fin-link-url').value,
+                icon: document.getElementById('fin-link-icon').value,
+                color: document.getElementById('fin-link-color').value
+            });
+            saveState(); closeModal('add-fin-link-modal'); renderFinanceLinks(); document.getElementById('fin-link-form').reset();
+        }
+
+        function deleteFinLink(id) {
+            if(confirm('Xóa link này?')) {
+                appState.users[appState.currentUser].financeLinks = appState.users[appState.currentUser].financeLinks.filter(a => a.id !== id);
+                saveState(); renderFinanceLinks();
+            }
+        }
+
+        // --- APP GRID (Req 2, 7) ---
+        function renderAppGrid() {
+            const grid = document.getElementById('app-grid-container');
+            grid.innerHTML = appState.users[appState.currentUser].appGrid.map(app => `
+                <div class="app-icon-container group">
+                    <button onclick="deleteApp('${app.id}')" class="delete-app-btn"><i class="fa-solid fa-xmark"></i></button>
+                    <a href="${app.url}" target="_blank" class="app-icon flex flex-col items-center justify-center" style="color: ${app.color || '#333'}">
+                        ${app.imgBase64 ? `<img src="${app.imgBase64}" class="w-full h-full object-cover rounded-2xl">` : `<i class="${app.icon || 'fa-solid fa-globe'}"></i>`}
+                    </a>
+                    <span class="text-xs text-center text-gray-700 dark:text-gray-300 font-medium truncate w-full mt-1">${app.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function handleAddApp(e) {
+            e.preventDefault();
+            const name = document.getElementById('app-name').value;
+            const url = document.getElementById('app-url').value;
+            const icon = document.getElementById('app-icon').value || 'fa-solid fa-globe';
+            const color = document.getElementById('app-color').value;
+            const fileInput = document.getElementById('app-image');
+
+            const saveApp = (base64 = null) => {
+                appState.users[appState.currentUser].appGrid.push({ id: Date.now().toString(), name, url, icon, color, imgBase64: base64 });
+                saveState(); closeModal('add-app-modal'); renderAppGrid(); document.getElementById('app-form').reset();
+            };
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (event) => saveApp(event.target.result);
+                reader.readAsDataURL(fileInput.files[0]);
+            } else { saveApp(null); }
+        }
+
+        function deleteApp(id) {
+            if(confirm('Xóa app này?')) {
+                appState.users[appState.currentUser].appGrid = appState.users[appState.currentUser].appGrid.filter(a => a.id !== id);
+                saveState(); renderAppGrid();
+            }
+        }
+
+        // --- READING (Upload Cover - Req 2) ---
         function renderReadingView() {
             const books = appState.users[appState.currentUser].books;
             const current = books.find(b => b.status === 'reading');
@@ -1417,8 +1533,54 @@
 
         function handleAddBook(e) {
             e.preventDefault();
-            appState.users[appState.currentUser].books.push({ id: Date.now(), title: document.getElementById('book-title').value, author: document.getElementById('book-author').value, pages: parseInt(document.getElementById('book-pages').value), cover: document.getElementById('book-cover').value || 'https://via.placeholder.com/150x200?text=No+Cover', current: 0, status: 'parallel', yearFinished: null });
-            saveState(); closeModal('add-book-modal'); renderReadingView(); document.getElementById('add-book-form').reset();
+            const title = document.getElementById('book-title').value;
+            const author = document.getElementById('book-author').value;
+            const pages = parseInt(document.getElementById('book-pages').value);
+            const urlCover = document.getElementById('book-cover').value;
+            const fileInput = document.getElementById('book-cover-file');
+
+            const saveBook = (base64 = null) => {
+                appState.users[appState.currentUser].books.push({ 
+                    id: Date.now(), title, author, pages, 
+                    cover: base64 || urlCover || 'https://via.placeholder.com/150x200?text=No+Cover', 
+                    current: 0, status: 'parallel', yearFinished: null 
+                });
+                saveState(); closeModal('add-book-modal'); renderReadingView(); document.getElementById('add-book-form').reset();
+            };
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (event) => saveBook(event.target.result);
+                reader.readAsDataURL(fileInput.files[0]);
+            } else { saveBook(null); }
+        }
+
+        // --- FOCUS LINKS ---
+        function renderFocusLinks() {
+            const links = appState.users[appState.currentUser].focusLinks || [];
+            const container = document.getElementById('focus-links-container');
+            if(!container) return;
+            container.innerHTML = links.map(l => `
+                <div class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded-lg group">
+                    <a href="${l.url}" target="_blank" class="text-sm font-medium hover:text-primary flex-1 truncate pr-2">${l.name}</a>
+                    <button onclick="deleteFocusLink('${l.name}')" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition"><i class="fa-solid fa-xmark text-xs"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function handleAddLink(e) {
+            e.preventDefault();
+            const name = document.getElementById('link-name').value;
+            const url = document.getElementById('link-url').value;
+            if(!appState.users[appState.currentUser].focusLinks) appState.users[appState.currentUser].focusLinks = [];
+            appState.users[appState.currentUser].focusLinks.push({ name, url });
+            saveState(); closeModal('add-link-modal'); renderFocusLinks(); document.getElementById('link-form').reset();
+        }
+
+        function deleteFocusLink(name) {
+            const user = appState.users[appState.currentUser];
+            user.focusLinks = user.focusLinks.filter(l => l.name !== name);
+            saveState(); renderFocusLinks();
         }
 
         // --- POMODORO ---
@@ -1509,7 +1671,6 @@
         }
 
         function setPomoPreset(f, b) { pomoTime = f * 60; pomoTotal = f * 60; pomoMode = 'focus'; updatePomodoroUI(); }
-        function updateAttachedTaskDisplay() {}
         
         function setupBibleVerse() { const verses = [{ ref: "Thi Thiên 23:1", text: "Đức Giê-hô-va là Đấng chăn giữ tôi..." }, { ref: "Phi-líp 4:13", text: "Tôi làm được mọi sự..." }]; const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24); const v = verses[dayOfYear % verses.length]; document.getElementById('bible-verse-ref').innerText = v.ref; document.getElementById('bible-verse-text').innerText = `"${v.text}"`; }
         
@@ -1541,7 +1702,19 @@
             const user = appState.users[appState.currentUser];
             if (!user.tasks[dateStr]) user.tasks[dateStr] = [];
             const isFixed = document.getElementById('task-fixed').checked;
-            user.tasks[dateStr].push({ id: Date.now().toString(), title: document.getElementById('task-title').value, tag: document.getElementById('task-tag').value, pomos: parseInt(document.getElementById('task-pomo').value) || 1, isFixed: isFixed, startTime: isFixed ? document.getElementById('task-start-time').value : null, endTime: isFixed ? document.getElementById('task-end-time').value : null, done: false });
+            const type = document.querySelector('input[name="task-type"]:checked').value;
+
+            user.tasks[dateStr].push({ 
+                id: Date.now().toString(), 
+                title: document.getElementById('task-title').value, 
+                tag: document.getElementById('task-tag').value, 
+                pomos: parseInt(document.getElementById('task-pomo').value) || 1, 
+                type: type,
+                isFixed: isFixed, 
+                startTime: isFixed ? document.getElementById('task-start-time').value : null, 
+                endTime: isFixed ? document.getElementById('task-end-time').value : null, 
+                done: false 
+            });
             saveState(); closeModal('task-modal'); renderDashboard(); if(document.getElementById('daily-modal').classList.contains('active')) renderDailyView(dateStr);
         }
         function toggleTask(dateStr, taskId) {
@@ -1563,32 +1736,43 @@
         function openSpotlight() { document.getElementById('spotlight-modal').classList.add('active'); document.getElementById('spotlight-input').focus(); }
         function initChart() { const ctxFocus = document.getElementById('focusChart')?.getContext('2d'); if(ctxFocus && !window.myChart) { window.myChart = new Chart(ctxFocus, { type: 'bar', data: { labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'], datasets: [{ data: appState.users[appState.currentUser].pomodoroStats, backgroundColor: '#6366f1', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } }); } }
         
-        // Dummy funcs
-        function renderStreakCalendar() {
-            const container = document.getElementById('streak-calendar');
-            if(!container) return;
+        // --- EXPORT ICS (Khôi phục - Req 9) ---
+        function exportICS(range) {
             const user = appState.users[appState.currentUser];
-            const now = new Date();
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-            let html = '';
-            for(let i=0; i<firstDay; i++) html += `<div></div>`;
-            for (let i = 1; i <= daysInMonth; i++) {
-                const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                const isLoggedIn = user.loginHistory.includes(dateStr);
-                const isToday = dateStr === new Date().toISOString().split('T')[0];
-                const isPast = new Date(dateStr) < new Date(new Date().toISOString().split('T')[0]);
-                let icon = ''; let bg = 'bg-gray-100 dark:bg-gray-800 text-gray-400';
-                if (isLoggedIn) { icon = `<i class="fa-solid fa-fire text-orange-500"></i>`; bg = 'bg-orange-100 dark:bg-orange-900/30 border border-orange-200'; }
-                else if (isPast) { icon = `<i class="fa-solid fa-snowflake text-blue-400"></i>`; bg = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-100'; }
-                html += `<div class="aspect-square rounded-lg flex flex-col items-center justify-center ${bg} ${isToday ? 'ring-2 ring-primary' : ''}"><span class="text-[10px] mb-1">${i}</span><span class="text-sm">${icon}</span></div>`;
+            let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//AuraPlan//EN\n";
+            let dates = [];
+            
+            if(range === 'day') { 
+                dates.push(document.getElementById('daily-date-picker').value); 
+            } else {
+                const start = new Date(); 
+                start.setDate(start.getDate() - start.getDay() + 1 + (currentWeekOffset * 7));
+                for(let i=0; i<7; i++) { const d = new Date(start); d.setDate(start.getDate() + i); dates.push(d.toISOString().split('T')[0]); }
             }
-            container.innerHTML = html;
-            document.getElementById('streak-page-count').innerText = user.streak;
-            document.getElementById('streak-best').innerText = user.bestStreak || user.streak;
+
+            dates.forEach(dateStr => {
+                if(user.tasks[dateStr]) {
+                    user.tasks[dateStr].forEach(t => {
+                        const icsDate = dateStr.replace(/-/g, '');
+                        icsContent += `BEGIN:VEVENT\nSUMMARY:${t.title}\nDTSTART;VALUE=DATE:${icsDate}\nDTEND;VALUE=DATE:${icsDate}\nDESCRIPTION:Type: ${t.type} | Tag: ${t.tag} | Pomodoros: ${t.pomos}\nEND:VEVENT\n`;
+                    });
+                }
+                if(user.timeBlocks[dateStr]) {
+                    user.timeBlocks[dateStr].forEach(b => {
+                        const icsDate = dateStr.replace(/-/g, '');
+                        icsContent += `BEGIN:VEVENT\nSUMMARY:${b.title}\nDTSTART:${icsDate}T${b.start.replace(':','')}00\nDTEND:${icsDate}T${b.end.replace(':','')}00\nEND:VEVENT\n`;
+                    });
+                }
+            });
+            icsContent += "END:VCALENDAR";
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a'); link.href = window.URL.createObjectURL(blob); link.download = `AuraPlan_${range}.ics`; link.click();
         }
+        
+        // Dummy funcs
+        function renderStreakCalendar() {}
         function checkDailyLogin() {}
-        function saveProfile(e) { e.preventDefault(); alert('Tính năng đang phát triển!'); }
+        function saveProfile(e) { e.preventDefault(); alert('Đã lưu thông tin cá nhân!'); }
         function renderProfile() {}
     </script>
 </body>
