@@ -101,14 +101,17 @@
 <body class="bg-appleGray text-gray-800 dark:bg-appleDark dark:text-gray-100 font-sans antialiased transition-colors duration-300">
 
     <!-- AUTH SCREEN (Req 4) -->
-    <div id="auth-screen" class="hidden">
+        <!-- AUTH SCREEN (Đã nâng cấp) -->
+    <div id="auth-screen" class="hidden fixed inset-0 bg-gray-100 dark:bg-gray-900 z-[9999] flex items-center justify-center">
         <div class="glass-panel w-full max-w-md p-8 rounded-3xl shadow-2xl relative">
+            <button onclick="closeModal('auth-screen')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-white hidden" id="auth-close-btn"><i class="fa-solid fa-xmark"></i></button>
+            
             <div class="text-center mb-8">
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg mx-auto mb-4">
                     <i class="fa-solid fa-infinity text-3xl"></i>
                 </div>
-                <h1 class="text-2xl font-bold">Chào mừng đến AuraPlan</h1>
-                <p class="text-sm text-gray-500 mt-2">Đăng nhập để đồng bộ dữ liệu của bạn.</p>
+                <h1 class="text-2xl font-bold" id="auth-title">Chào mừng trở lại</h1>
+                <p class="text-sm text-gray-500 mt-2" id="auth-subtitle">Đăng nhập để đồng bộ dữ liệu của bạn.</p>
             </div>
             
             <form id="auth-form" onsubmit="handleAuth(event)">
@@ -122,11 +125,11 @@
                         <input type="password" id="auth-password" required class="w-full mt-1 p-3 rounded-xl bg-gray-100 dark:bg-gray-800 border-none outline-none focus:ring-2 ring-primary">
                     </div>
                 </div>
-                <button type="submit" id="auth-submit-btn" class="w-full mt-6 bg-primary text-white py-3 rounded-xl font-bold hover:opacity-90 transition">Đăng Nhập</button>
+                <button type="submit" id="auth-submit-btn" class="w-full mt-6 bg-primary text-white py-3 rounded-xl font-bold hover:opacity-90 transition shadow-lg">Đăng Nhập</button>
             </form>
             
             <div class="mt-4 text-center">
-                <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-sm text-primary hover:underline">Chưa có tài khoản? Đăng ký ngay</button>
+                <button type="button" onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-sm text-primary hover:underline font-medium">Chưa có tài khoản? Đăng ký ngay</button>
             </div>
         </div>
     </div>
@@ -923,57 +926,54 @@
         let appState = defaultState;
 
         // --- AUTH LOGIC (Req 4, 5) ---
+        // --- AUTH LOGIC (Bản nâng cấp) ---
+        let isSignUpMode = false;
+
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('auth-submit-btn').innerText = isSignUpMode ? 'Đăng Ký Tài Khoản' : 'Đăng Nhập';
+            document.getElementById('auth-toggle-btn').innerText = isSignUpMode ? 'Đã có tài khoản? Quay lại Đăng nhập' : 'Chưa có tài khoản? Đăng ký ngay';
+            document.getElementById('auth-title').innerText = isSignUpMode ? 'Tạo tài khoản mới' : 'Chào mừng trở lại';
+            document.getElementById('auth-subtitle').innerText = isSignUpMode ? 'Bắt đầu hành trình của bạn cùng AuraPlan.' : 'Đăng nhập để đồng bộ dữ liệu của bạn.';
+        }
+
         async function handleAuth(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             const btn = document.getElementById('auth-submit-btn');
+            
+            // Kiểm tra xem đã cấu hình Supabase chưa
+            if (supabaseUrl.includes('YOUR_PROJECT_ID')) {
+                alert('Lỗi: Bạn chưa cấu hình Supabase URL và Key trong code!');
+                return;
+            }
+
             btn.innerText = 'Đang xử lý...';
+            btn.disabled = true;
 
             try {
                 if (isSignUpMode) {
                     const { data, error } = await supabase.auth.signUp({ email, password });
                     if (error) throw error;
                     alert('Đăng ký thành công! Hãy kiểm tra email để xác nhận (nếu có), sau đó đăng nhập.');
-                    toggleAuthMode(); // Chuyển về form đăng nhập
+                    toggleAuthMode(); 
                 } else {
                     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
                     if (error) throw error;
-                    // Thành công
+                    
                     currentUser = data.user;
                     document.getElementById('auth-screen').classList.add('hidden');
+                    document.getElementById('auth-screen').classList.remove('flex');
                     document.getElementById('user-email-display').innerText = currentUser.email;
                     await loadAppData();
                 }
             } catch (error) {
-                alert('Lỗi: ' + error.message); // Hiển thị lỗi lên màn hình
+                alert('Lỗi: ' + error.message);
                 console.error(error);
             } finally {
-                btn.innerText = isSignUpMode ? 'Đăng Ký' : 'Đăng Nhập';
-            }
-        }
-
-        function toggleAuthMode() {
-            isSignUpMode = !isSignUpMode;
-            document.getElementById('auth-submit-btn').innerText = isSignUpMode ? 'Đăng Ký' : 'Đăng Nhập';
-            document.getElementById('auth-toggle-btn').innerText = isSignUpMode ? 'Đã có tài khoản? Đăng nhập' : 'Chưa có tài khoản? Đăng ký ngay';
-        }
-
-        async function logout() {
-            await supabase.auth.signOut();
-            document.getElementById('auth-screen').classList.remove('hidden');
-        }
-
-        // Kiểm tra đăng nhập khi load trang
-        async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('user-email-display').innerText = currentUser.email;
-                await loadAppData();
-            } else {
-                document.getElementById('auth-screen').classList.remove('hidden');
+                btn.innerText = isSignUpMode ? 'Đăng Ký Tài Khoản' : 'Đăng Nhập';
+                btn.disabled = false;
             }
         }
 
