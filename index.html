@@ -99,11 +99,15 @@
 </head>
 <body class="bg-appleGray text-gray-800 dark:bg-appleDark dark:text-gray-100 font-sans antialiased transition-colors duration-300">
 
+    <!-- MÀN HÌNH CHỜ CÓ NÚT CỨU HỘ -->
     <div id="loading-screen">
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-lg animate-pulse mb-4">
             <i class="fa-solid fa-infinity text-3xl"></i>
         </div>
-        <p class="text-gray-500 font-medium">Đang tải dữ liệu...</p>
+        <p class="text-gray-500 font-medium mb-4">Đang tải dữ liệu...</p>
+        <button onclick="forceReset()" id="reset-btn" class="hidden px-6 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition text-sm font-bold">
+            <i class="fa-solid fa-rotate-right mr-2"></i> Bị kẹt? Bấm vào đây để Khởi động lại
+        </button>
     </div>
 
     <div class="fixed inset-0 -z-10 bg-[#F5F5F7] dark:bg-[#121212] transition-colors duration-300"></div>
@@ -140,7 +144,6 @@
                         
                         <hr class="my-1 border-gray-100 dark:border-gray-700">
                         
-                        <!-- Nút Đăng nhập/Đăng xuất -->
                         <button id="auth-action-btn" onclick="handleAuthButtonClick()" class="w-full text-left px-3 py-2 text-sm text-primary font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition">
                             <i class="fa-solid fa-cloud-arrow-up mr-2 w-4"></i> Đăng nhập để đồng bộ
                         </button>
@@ -182,7 +185,6 @@
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
             
             <div class="xl:col-span-9 flex flex-col gap-5">
-                <!-- Weekly Schedule -->
                 <div class="glass-panel rounded-3xl p-5">
                     <div class="flex justify-between items-center mb-4 px-2">
                         <h3 class="font-bold text-lg"><i class="fa-regular fa-calendar-days text-primary mr-2"></i> Lịch Trình Tuần</h3>
@@ -193,12 +195,9 @@
                             <button onclick="changeWeek(1)" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-gray-200 transition"><i class="fa-solid fa-chevron-right text-xs"></i></button>
                         </div>
                     </div>
-                    <div id="schedule-container" class="drag-scroll flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
-                        <!-- Days injected here -->
-                    </div>
+                    <div id="schedule-container" class="drag-scroll flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x"></div>
                 </div>
 
-                <!-- Widgets Row -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div class="glass-panel rounded-3xl p-5 flex flex-col hover-lift cursor-pointer" onclick="openFeature('habits')">
                         <div class="flex justify-between items-center mb-4">
@@ -225,7 +224,6 @@
                 </div>
             </div>
 
-            <!-- Right Column (Pomodoro Summary) -->
             <div class="xl:col-span-3 flex flex-col gap-5">
                 <div class="glass-panel rounded-3xl p-6 flex flex-col items-center relative overflow-hidden bg-indigo-50 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-900/30">
                     <h3 class="font-bold text-lg mb-1 absolute top-6 left-6"><i class="fa-solid fa-stopwatch text-indigo-500 mr-2"></i> Focus</h3>
@@ -261,7 +259,6 @@
 
     <!-- ================= ALL MODALS ================= -->
 
-    <!-- AUTH MODAL -->
     <div id="auth-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('auth-modal')">
         <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-8 relative">
             <button onclick="closeModal('auth-modal')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -294,7 +291,6 @@
         </div>
     </div>
 
-    <!-- Daily Planner -->
     <div id="daily-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('daily-modal')">
         <div class="modal-content glass-panel w-full max-w-5xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('daily-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -327,7 +323,6 @@
         </div>
     </div>
 
-    <!-- Habit Tracker -->
     <div id="habit-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('habit-modal')">
         <div class="modal-content glass-panel w-full max-w-6xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('habit-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -366,7 +361,6 @@
         </div>
     </div>
 
-    <!-- Reading Modal -->
     <div id="reading-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('reading-modal')">
         <div class="modal-content glass-panel w-full max-w-5xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('reading-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -415,7 +409,6 @@
         </div>
     </div>
 
-    <!-- Health Modal -->
     <div id="health-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('health-modal')">
         <div class="modal-content glass-panel w-full max-w-4xl h-[90vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('health-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -469,7 +462,6 @@
         </div>
     </div>
 
-    <!-- Finance Hub -->
     <div id="finance-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('finance-modal')">
         <div class="modal-content glass-panel w-full max-w-3xl h-[80vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('finance-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -485,7 +477,6 @@
         </div>
     </div>
 
-    <!-- Focus Modal -->
     <div id="focus-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('focus-modal')">
         <div class="modal-content glass-panel w-full max-w-5xl h-[85vh] rounded-3xl p-6 relative flex flex-col md:flex-row gap-6 overflow-y-auto">
             <button onclick="closeModal('focus-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -540,7 +531,6 @@
         </div>
     </div>
 
-    <!-- App Grid Modal -->
     <div id="appgrid-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('appgrid-modal')">
         <div class="modal-content glass-panel w-full max-w-3xl h-[80vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('appgrid-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -554,7 +544,6 @@
         </div>
     </div>
 
-    <!-- Profile Modal -->
     <div id="profile-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('profile-modal')">
         <div class="modal-content glass-panel w-full max-w-3xl h-[85vh] rounded-3xl p-6 relative flex flex-col">
             <button onclick="closeModal('profile-modal')" class="absolute top-6 right-6 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -614,7 +603,6 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
     <div id="settings-modal" class="modal-overlay" onclick="if(event.target === this) closeModal('settings-modal')">
         <div class="modal-content glass-panel w-full max-w-4xl h-[80vh] rounded-3xl p-0 flex flex-col md:flex-row overflow-hidden relative">
             <button onclick="closeModal('settings-modal')" class="absolute top-4 right-4 w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-gray-200 transition z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -653,7 +641,7 @@
         </div>
     </div>
 
-    <!-- ================= SMALL SUB-MODALS ================= -->
+    <!-- Sub-modals -->
     <div id="task-modal" class="modal-overlay" style="z-index: 110;" onclick="if(event.target === this) closeModal('task-modal')">
         <div class="modal-content glass-panel w-full max-w-md rounded-3xl p-6 relative">
             <button onclick="closeModal('task-modal')" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800"><i class="fa-solid fa-xmark"></i></button>
@@ -894,18 +882,38 @@
     </div>
 
     <script>
+        // Nút cứu hộ nếu bị kẹt
+        setTimeout(() => {
+            const resetBtn = document.getElementById('reset-btn');
+            if(resetBtn && document.getElementById('loading-screen').style.display !== 'none') {
+                resetBtn.classList.remove('hidden');
+            }
+        }, 3000);
+
+        function forceReset() {
+            localStorage.removeItem('auraplan_stable_v17');
+            window.location.reload();
+        }
+
         // ==========================================
-        // 1. CẤU HÌNH SUPABASE
+        // 1. CẤU HÌNH SUPABASE (Có kiểm tra an toàn)
         // ==========================================
-        const supabaseUrl = 'https://ihiuwugimhztsfqhhasv.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloaXV3dWdpbWh6dHNmcWhoYXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NDcxMjYsImV4cCI6MjEwODMyMzEyNn0.BvnAo1Arxpg4tOEkjw9gRnSeP8CbeBvsSuWmbk-zIOE';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        let supabase = null;
+        try {
+            if (typeof window.supabase !== 'undefined') {
+                const supabaseUrl = 'https://ihiuwugimhztsfqhhasv.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImloaXV3dWdpbWh6dHNmcWhoYXN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NDcxMjYsImV4cCI6MjEwODMyMzEyNn0.BvnAo1Arxpg4tOEkjw9gRnSeP8CbeBvsSuWmbk-zIOE';
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            }
+        } catch (e) {
+            console.warn("Không thể khởi tạo Supabase SDK:", e);
+        }
         
         let currentUser = null;
         let isSignUpMode = false;
 
         // ==========================================
-        // 2. STATE & KHỞI TẠO
+        // 2. STATE (Có bọc lỗi dữ liệu cũ)
         // ==========================================
         let currentWeekOffset = 0;
         let currentDailyDate = new Date().toISOString().split('T')[0];
@@ -922,24 +930,44 @@
             profile: { name: 'Minh', dob: '', job: '', edu: '', bio: '', hobbies: '', socials: [], avatar: 'https://i.pravatar.cc/100?img=47' }
         };
 
-        let appState = JSON.parse(localStorage.getItem('auraplan_stable_v17')) || JSON.parse(JSON.stringify(defaultState));
+        let appState;
+        try {
+            const saved = localStorage.getItem('auraplan_stable_v17');
+            appState = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(defaultState));
+            // Sửa lỗi dữ liệu cũ thiếu trường
+            if(!appState.profile) appState.profile = defaultState.profile;
+            if(!appState.tags) appState.tags = defaultState.tags;
+            if(!appState.tasks) appState.tasks = {};
+            if(!appState.habits) appState.habits = {};
+            if(!appState.books) appState.books = [];
+            if(!appState.garden) appState.garden = [];
+        } catch (e) {
+            console.error("Dữ liệu Local bị lỗi, tự động khôi phục mặc định.");
+            appState = JSON.parse(JSON.stringify(defaultState));
+        }
 
+        // ==========================================
+        // 3. KHỞI TẠO (Bọc Try/Catch toàn diện)
+        // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 initAppUI();
             } catch (e) {
                 console.error("Lỗi khởi tạo giao diện:", e);
+            } finally {
+                // Luôn tắt màn hình loading dù có lỗi hay không
+                const ls = document.getElementById('loading-screen');
+                if(ls) ls.style.display = 'none';
             }
 
-            document.getElementById('loading-screen').style.display = 'none';
-
             try {
-                // Thử lấy session, nếu lỗi thì bỏ qua và chạy Offline
-                const { data: { session }, error } = await supabase.auth.getSession();
-                if (!error && session) {
-                    currentUser = session.user;
-                    updateAuthUI();
-                    await pullCloudData();
+                if(supabase) {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+                    if (!error && session) {
+                        currentUser = session.user;
+                        updateAuthUI();
+                        await pullCloudData();
+                    }
                 }
             } catch (err) {
                 console.warn("Không thể kết nối Supabase, chạy chế độ Offline.", err);
@@ -974,18 +1002,20 @@
         }
 
         // ==========================================
-        // 3. SYNC LOGIC
+        // 4. SYNC & AUTH LOGIC
         // ==========================================
         async function saveState() {
             localStorage.setItem('auraplan_stable_v17', JSON.stringify(appState));
-            if (currentUser) {
-                const { error } = await supabase.from('profiles').upsert({ id: currentUser.id, data: appState });
-                if (error) console.error('Lỗi đồng bộ:', error);
+            if (currentUser && supabase) {
+                try {
+                    const { error } = await supabase.from('profiles').upsert({ id: currentUser.id, data: appState });
+                    if (error) console.error('Lỗi đồng bộ:', error);
+                } catch(e) { console.error('Lỗi mạng khi đồng bộ:', e); }
             }
         }
 
         async function pullCloudData() {
-            if(!currentUser) return;
+            if(!currentUser || !supabase) return;
             try {
                 const { data, error } = await supabase.from('profiles').select('data').eq('id', currentUser.id).single();
                 if (data && data.data) {
@@ -1000,9 +1030,6 @@
             }
         }
 
-        // ==========================================
-        // 4. AUTH LOGIC
-        // ==========================================
         function handleAuthButtonClick() {
             closeUserMenu();
             if (currentUser) {
@@ -1021,6 +1048,8 @@
 
         async function handleAuth(e) {
             e.preventDefault();
+            if(!supabase) { alert("Lỗi: Chưa tải được thư viện Supabase. Vui lòng kiểm tra kết nối mạng."); return; }
+
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             const btn = document.getElementById('auth-submit-btn');
@@ -1055,7 +1084,7 @@
         }
 
         async function logout() {
-            await supabase.auth.signOut();
+            if(supabase) await supabase.auth.signOut();
             currentUser = null;
             updateAuthUI();
             alert('Đã đăng xuất. Bạn vẫn có thể tiếp tục sử dụng ứng dụng dưới dạng Offline.');
@@ -1077,7 +1106,7 @@
         }
 
         // ==========================================
-        // 5. GIAO DIỆN CƠ BẢN
+        // 5. CÁC HÀM XỬ LÝ GIAO DIỆN
         // ==========================================
         function applyTheme(t) { if(t==='dark' || (t==='system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
         function toggleTheme() { currentTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark'; applyTheme(currentTheme); localStorage.setItem('auraplan_theme', currentTheme); }
